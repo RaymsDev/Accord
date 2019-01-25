@@ -12,6 +12,9 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
+
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { RoomService } from './services/room.service';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -19,12 +22,14 @@ import { environment } from 'src/environments/environment';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebase)
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    RoomService
   ],
   bootstrap: [AppComponent]
 })
