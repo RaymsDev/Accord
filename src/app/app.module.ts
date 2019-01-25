@@ -7,13 +7,14 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AngularFireModule } from '@angular/fire';
-import { environment } from '../environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 
 import { AuthService } from './services/auth.service';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
