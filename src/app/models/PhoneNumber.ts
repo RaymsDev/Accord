@@ -1,14 +1,12 @@
 import { IPhoneNumber } from './IPhoneNumber';
 
 export class PhoneNumber implements IPhoneNumber {
-    country: string;
-    area: string;
-    prefix: string;
-    line: string;
+
+    number: string;
 
     // format phone numbers as E.164
     get e164() {
-        const num = this.country + this.area + this.prefix + this.line;
+        const num = this.number;
         return `+${num}`;
     }
 }

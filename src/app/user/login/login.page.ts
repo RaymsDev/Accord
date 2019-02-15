@@ -34,6 +34,8 @@ export class LoginPage implements OnInit {
 
     const num = this.phoneNumber.e164;
 
+    console.log('Number :' + num);
+
     firebase.auth().signInWithPhoneNumber(num, appVerifier)
       .then(result => {
 
@@ -50,6 +52,7 @@ export class LoginPage implements OnInit {
       .then(result => {
 
         this.user = result.user;
+        console.log('It work MF !!');
 
       })
       .catch(error => console.log(error, 'Incorrect code entered?'));

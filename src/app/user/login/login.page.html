@@ -5,59 +5,51 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-grid>
-    <ion-row>
-      <ion-col>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Connectez vous au plus vite</ion-card-subtitle>
+      <ion-card-title>Connexion</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
         <ion-label>Phone number :</ion-label>
-      </ion-col>
-      <ion-col>
-        <ion-item>
-          <ion-input required type="text" placeholder="1" [(ngModel)]="phoneNumber.country"></ion-input>
-          <ion-input required type="text" placeholder="949" [(ngModel)]="phoneNumber.area"></ion-input>
-          <ion-input required type="text" placeholder="555" [(ngModel)]="phoneNumber.prefix"></ion-input>
-          <ion-input required type="text" placeholder="5555" [(ngModel)]="phoneNumber.line"></ion-input>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
+        <ion-input required type="tel" placeholder="33 6 35 67 98 77" [(ngModel)]="phoneNumber.number"></ion-input>
+        <ion-icon name="call" slot="end"></ion-icon>
+      </ion-item>
+
+      <ion-item>
         <ion-label>Phone number :</ion-label>
-      </ion-col>
-      <ion-col>
+        <ion-input required type="password" placeholder="password" [(ngModel)]="password"></ion-input>
+        <ion-icon name="lock" slot="end"></ion-icon>
+      </ion-item>
+      <br>
+      <div class="recaptcha-block">
+        <div id="recaptcha-container"></div>
+      </div>
+      <div class="recaptcha-block">
+        <ion-button size=default (click)="sendLoginCode()">Send Me a Code</ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-item *ngIf="windowRef.confirmationResult && !user">
+      <div>
+        <hr>
+        <ion-label for="code">Enter your Verification Code Here</ion-label><br>
         <ion-item>
-          <ion-input required type="password" placeholder="password" [(ngModel)]="password"></ion-input>
+          <ion-input type="text" name="code" [(ngModel)]="verificationCode"></ion-input>
         </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col align-items-center>
-        <ion-item>
-          <ion-button size="default" color="primary">Submit</ion-button>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-item>
-    <div id="recaptcha-container"></div>
-  </ion-item>
-  <ion-item>
-    <button (click)="sendLoginCode()">SMS Text Login Code</button>
-  </ion-item>
-  <ion-item>
-    <div *ngIf="windowRef.confirmationResult">
-      <hr>
-      <label for="code">Enter your Verification Code Here</label><br>
-      <input type="text" name="code" [(ngModel)]="verificationCode">
-
-      <button (click)="verifyLoginCode()">Verify</button>
-    </div>
-  </ion-item>
-  <ion-item>
-    <div *ngIf="user">
-      You have successfully logged in with your phone number!
-
-      UserId: {{ user?.uid }}
-
-    </div>
-  </ion-item>
+        <ion-button (click)="verifyLoginCode()">Verify</ion-button>
+      </div>
+    </ion-item>
+  </ion-card>
+  <ion-card>
+    <ion-item *ngIf="user">
+      <div>
+        You have successfully logged in with your phone number!
+        UserId: {{ user?.uid }}
+      </div>
+    </ion-item>
+  </ion-card>
 </ion-content>
