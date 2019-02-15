@@ -3,6 +3,20 @@ import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { RoomService } from './services/room.service';
+
+const pages = [
+  {
+    title: 'Home',
+    url: '/home',
+    icon: 'home'
+  },
+  {
+    title: 'Login',
+    url: '/login',
+    icon: 'login'
+  }
+];
 
 @Component({
   selector: 'app-root',
@@ -19,18 +33,14 @@ export class AppComponent {
       title: 'List',
       url: '/list',
       icon: 'list'
-    },
-    {
-      title: 'Login',
-      url: '/login',
-      icon: 'login'
     }
   ];
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    private roomService: RoomService
   ) {
     this.initializeApp();
   }
@@ -39,6 +49,20 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.initRooms();
+    });
+  }
+
+  initRooms() {
+    this.roomService.Rooms.subscribe(rooms => {
+      this.appPages = pages;
+      rooms.forEach(r => {
+        this.appPages.push({
+          title: r.name,
+          url: '/room/' + r.uid,
+          icon: r.icon
+        });
+      });
     });
   }
 }

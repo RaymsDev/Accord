@@ -18,8 +18,11 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: './user/login/login.module#LoginPageModule'
+  },
+  {
+    path: 'room/:id',
+    loadChildren: './room/room.module#RoomPageModule'
   }
-
 ];
 
 @NgModule({
