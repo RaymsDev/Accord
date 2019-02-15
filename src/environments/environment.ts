@@ -6,7 +6,14 @@ import * as firebase from './firebase.config.json';
 
 export const environment = {
   production: false,
-  firebase
+  firebase: {
+    'apiKey': firebase.apiKey,
+    'authDomain': firebase.authDomain,
+    'databaseURL': 'https://accord-204f9.firebaseio.com',
+    'projectId': 'accord-204f9',
+    'storageBucket': 'accord-204f9.appspot.com',
+    'messagingSenderId': '862001385312'
+  }
 };
 
 /*

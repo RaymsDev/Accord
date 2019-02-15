@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-label>Phone number :</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-item>
+          <ion-input required type="tel" placeholder="+33 00 00 00 00 00" [(ngModel)]="phone"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-label>Phone number :</ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-item>
+          <ion-input required type="password" placeholder="password" [(ngModel)]="password"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col align-items-center>
+        <ion-item>
+          <ion-button size="default" color="primary">Submit</ion-button>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
