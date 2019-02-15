@@ -44,12 +44,12 @@ export class AppComponent {
   }
 
   initRooms() {
-    this.roomService.Rooms.subscribe(rooms => {
+    this.roomService.Rooms$.subscribe(rooms => {
       this.appPages = pages;
       rooms.forEach(r => {
         this.appPages.push({
           title: r.name,
-          url: '/room/' + r.uid,
+          url: '/room/' + r.id,
           icon: r.icon
         });
       });
