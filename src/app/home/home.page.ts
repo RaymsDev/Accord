@@ -9,9 +9,6 @@ import { AuthService } from '../services/auth.service';
 export class HomePage {
   user: firebase.User;
   constructor(private authService: AuthService) {
-  }
-
-  login() {
-    this.authService.loginAnonimous();
+    authService.User.subscribe((user) => this.user = user);
   }
 }

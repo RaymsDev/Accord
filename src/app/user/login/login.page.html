@@ -12,9 +12,14 @@
     </ion-card-header>
 
     <ion-card-content>
+      <!-- TEMP sign up component -->
+      <app-signup></app-signup>
       <ion-item>
-        <ion-label>Phone number :</ion-label>
-        <ion-input required type="tel" placeholder="33 6 35 67 98 77" [(ngModel)]="phoneNumber.number"></ion-input>
+        <ion-label for="phone">Phone number :</ion-label>
+        <!-- TODO put space between digits https://stackoverflow.com/questions/50619823/angular-5-add-space-after-every-4-digit-in-input -->
+        <ion-input required type="tel" name="phone" placeholder="33 6 35 67 98 77" maxlength="11"
+          [(ngModel)]="phoneNumber.number">
+        </ion-input>
         <ion-icon name="call" slot="end"></ion-icon>
       </ion-item>
       <br>
@@ -26,17 +31,20 @@
       </div>
     </ion-card-content>
   </ion-card>
-  <ion-card>
-    <ion-item *ngIf="windowRef.confirmationResult && !user">
+  <ion-card *ngIf="windowRef.confirmationResult && !user">
+    <ion-card-content>
       <div>
         <hr>
-        <ion-label for="code">Enter your Verification Code Here</ion-label><br>
         <ion-item>
-          <ion-input type="text" name="code" [(ngModel)]="verificationCode"></ion-input>
+          <ion-label for="code">Verification Code : </ion-label><br>
+          <ion-input type="text" name="code" maxlength="6" [(ngModel)]="verificationCode"></ion-input>
+          <ion-icon name="lock" slot="end"></ion-icon>
         </ion-item>
-        <ion-button (click)="verifyLoginCode()">Verify</ion-button>
+        <div class="recaptcha-block">
+          <ion-button size=default (click)="verifyLoginCode()">Verify</ion-button>
+        </div>
       </div>
-    </ion-item>
+    </ion-card-content>
   </ion-card>
   <ion-card>
     <ion-item *ngIf="user">
@@ -47,4 +55,5 @@
     </ion-item>
   </ion-card>
   <ion-button *ngIf="user" (click)="logoutplz()">Logout</ion-button>
+  <ion-button (click)="showPseudo()">Show pseudo</ion-button>
 </ion-content>

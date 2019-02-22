@@ -5,6 +5,7 @@ import { Observable, from } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import { FirebaseAuth } from '@angular/fire';
 import { Router } from '@angular/router';
+import { async } from 'q';
 
 
 @Injectable({
@@ -14,6 +15,7 @@ export class AuthService {
 
   user: firebase.User;
   userObservable: Observable<firebase.User>;
+  authObservable: Observable<firebase.auth.Auth>;
 
   constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController, private router: Router) {
     firebaseAuth.authState.subscribe((auth) => this.user = auth);
@@ -23,6 +25,8 @@ export class AuthService {
   get authenticated(): boolean {
     return this.user !== null;
   }
+
+
 
   get User(): Observable<firebase.User> {
     return this.userObservable;
@@ -37,61 +41,37 @@ export class AuthService {
     return this.authenticated ? this.user.uid : '';
   }
 
-  loginAnonimous() {
-    this.firebaseAuth.auth.signInAnonymously().then(async _ => {
-      (await this.toastCtrl.create({
-        message: 'You well connect',
-        color: 'success',
-        duration: 2000
-      })).present();
-    }).catch(async err => {
-      (await this.toastCtrl.create({
-        message: 'Auth Fail',
-        color: 'danger',
-        duration: 2000
-      })).present();
-    });
-  }
-
-  signup_mail_psw(email: string, password: string) {
-    this.firebaseAuth
-      .auth
-      .createUserWithEmailAndPassword(email, password)
-      .then(value => {
-        console.log('Success!', value);
-      })
-      .catch(err => {
-        console.log('Something went wrong:', err.message);
-      });
-  }
-
-  login_mail_psw(email: string, password: string) {
-    this.firebaseAuth
-      .auth
-      .signInWithEmailAndPassword(email, password)
-      .then(value => {
-        console.log('Nice, it worked!');
-      })
-      .catch(err => {
-        console.log('Something went wrong:', err.message);
-      });
-  }
-
   send_phone_code(num, appVerifier): Observable<any> {
     return from(this.firebaseAuth.auth.signInWithPhoneNumber(num, appVerifier));
   }
 
-  verify_phone_code(windowsRef, verificationCode) {
+  async verify_phone_code(windowsRef, verificationCode) {
     // Check code
-    windowsRef.confirmationResult
+    await windowsRef.confirmationResult
       .confirm(verificationCode)
       .then(result => {
+        // TODO Add toaster
         console.log(result, 'Well done you are in ! :)');
         this.router.navigate(['/']);
       })
+      // TODO Add toaster
       .catch(error => console.log(error, 'Incorrect code entered!'));
 
     // Root to homepage if success
+  }
+
+  verify_phone_code_with_set_pseudo(windowRef, verificationCode, pseudo) {
+    this.verify_phone_code(windowRef, verificationCode).then(() => {
+      console.log('Update profile');
+      this.firebaseAuth.auth.currentUser.updateProfile({
+        displayName: pseudo,
+        photoURL: null
+      }).then(() => {
+        console.log('Display name set in angular :P');
+      }).catch((error) => {
+        console.log('Error display name not set');
+      });
+    });
   }
 
   logout() {
@@ -99,5 +79,7 @@ export class AuthService {
       .auth
       .signOut();
   }
+
+  // updateDisplayName()
 
 }
