@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { PhoneNumber } from 'src/app/models/PhoneNumber';
 import { WindowService } from 'src/app/services/window.service';
 import * as firebase from 'firebase';
+import { AuthService } from 'src/app/services/auth.service';
+import { ToastController } from '@ionic/angular';
+import { async } from 'q';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +21,8 @@ export class LoginPage implements OnInit {
 
   user: any;
 
-  constructor(private win: WindowService) { }
+  constructor(private win: WindowService, private authService: AuthService,
+    private _toastCtrl: ToastController) { }
 
   ngOnInit() {
     this.windowRef = this.win.windowRef;
@@ -34,28 +38,32 @@ export class LoginPage implements OnInit {
 
     const num = this.phoneNumber.e164;
 
-    console.log('Number :' + num);
-
-    firebase.auth().signInWithPhoneNumber(num, appVerifier)
-      .then(result => {
-
+    this.authService.send_phone_code(num, appVerifier).subscribe(
+      (result) => {
         this.windowRef.confirmationResult = result;
-
-      })
-      .catch(error => console.log(error));
-
+      }, async error => {
+        (await this._toastCtrl.create({
+          message: 'Error append:' + error.message,
+          color: 'danger',
+          duration: 2000
+        })).present();
+      });
   }
 
   verifyLoginCode() {
-    this.windowRef.confirmationResult
-      .confirm(this.verificationCode)
-      .then(result => {
-
-        this.user = result.user;
-        console.log('It work MF !!');
-
-      })
-      .catch(error => console.log(error, 'Incorrect code entered?'));
+    this.authService.verify_phone_code(this.windowRef, this.verificationCode);
+    // this.windowRef.confirmationResult
+    //   .confirm(this.verificationCode)
+    //   .then(result => {
+    //     this.user = result.user;
+    //   })
+    //   .catch(async error => {
+    //     (await this._toastCtrl.create({
+    //       message: 'Error append: ' + error.message,
+    //       color: 'danger',
+    //       duration: 2000
+    //     })).present();
+    //   });
   }
 
 

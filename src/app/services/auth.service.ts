@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 
 import { ToastController } from '@ionic/angular';
 
@@ -56,6 +56,21 @@ export class AuthService {
       });
   }
 
+  send_phone_code(num, appVerifier): Observable<any> {
+    return from(this.firebaseAuth.auth.signInWithPhoneNumber(num, appVerifier));
+  }
+
+  verify_phone_code(windowsRef, verificationCode) {
+    // Check code
+    windowsRef.confirmationResult
+      .confirm(verificationCode)
+      .then(result => {
+        this.user = result.user;
+      })
+      .catch(error => console.log(error, 'Incorrect code entered!'));
+
+    // Root to homepage if success
+  }
 
   logout() {
     this.firebaseAuth
