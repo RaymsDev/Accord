@@ -29,6 +29,7 @@ export class LoginPage implements OnInit {
     this.windowRef.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
 
     this.windowRef.recaptchaVerifier.render();
+    this.authService.User.subscribe((user) => this.user = user);
   }
 
 
@@ -64,6 +65,10 @@ export class LoginPage implements OnInit {
     //       duration: 2000
     //     })).present();
     //   });
+  }
+
+  logoutplz() {
+    this.authService.logout();
   }
 
 

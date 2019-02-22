@@ -3,6 +3,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable, from } from 'rxjs';
 
 import { ToastController } from '@ionic/angular';
+import { FirebaseAuth } from '@angular/fire';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -10,10 +12,29 @@ import { ToastController } from '@ionic/angular';
 })
 export class AuthService {
 
-  user: Observable<firebase.User>;
+  user: firebase.User;
+  userObservable: Observable<firebase.User>;
 
-  constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController) {
-    this.user = firebaseAuth.authState;
+  constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController, private router: Router) {
+    firebaseAuth.authState.subscribe((auth) => this.user = auth);
+    this.userObservable = firebaseAuth.authState;
+  }
+
+  get authenticated(): boolean {
+    return this.user !== null;
+  }
+
+  get User(): Observable<firebase.User> {
+    return this.userObservable;
+  }
+
+  get currentUser(): any {
+    return this.authenticated ? this.user : null;
+  }
+
+  // Returns current user UID
+  get currentUserId(): string {
+    return this.authenticated ? this.user.uid : '';
   }
 
   loginAnonimous() {
@@ -65,7 +86,8 @@ export class AuthService {
     windowsRef.confirmationResult
       .confirm(verificationCode)
       .then(result => {
-        this.user = result.user;
+        console.log(result, 'Well done you are in ! :)');
+        this.router.navigate(['/']);
       })
       .catch(error => console.log(error, 'Incorrect code entered!'));
 
