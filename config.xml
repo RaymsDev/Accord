@@ -20,6 +20,7 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <platform name="android">
+        <preference name="APP_SECRET" value="589b4ee8-e272-44ff-932b-d119ed0b728c" />
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
@@ -83,4 +84,6 @@
     <plugin name="cordova-plugin-ionic-webview" spec="^2.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
     <engine name="android" spec="7.1.4" />
+    <plugin name="cordova-plugin-appcenter-analytics" spec="0.3.2" />
+    <plugin name="cordova-plugin-appcenter-crashes" spec="0.3.2" />
 </widget>
