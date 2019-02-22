@@ -1,1 +1,3 @@
-82W8bDwwSkb6XT8A1lV5gjBxai32
+https://dev.azure.com/raymsdev/Accord/_apis/build/status/Accord-CI?branchName=master
+
+# Accord
