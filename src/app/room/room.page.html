@@ -1,9 +1,14 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>room</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="room-title" slot="primary">
+      {{ (Room$ |async )?.name }}
+    </ion-title>
+    <ion-icon name="{{(Room$ |async )?.icon}}" size="large" slot="end"></ion-icon>
+
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-
-</ion-content>
+<ion-content padding> </ion-content>

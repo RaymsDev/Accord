@@ -1,5 +1,5 @@
 export interface IRoom {
-    uid: string;
+    id: string;
     name: string;
     icon: string;
 }
