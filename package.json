@@ -11,7 +11,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "dev": "ionic serve",
-    "platforms-prepare": "npx ionic cordova prepare android",
+    "platforms-prepare": "npx ionic cordova prepare",
     "platforms-android": "npx ionic cordova platform add android",
     "build-prod": "npx ionic cordova build android --prod --release",
     "clean": "npx rimraf ./www && npx rimraf ./platforms && npx rimraf ./plugins",
