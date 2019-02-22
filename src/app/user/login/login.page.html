@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Connectez vous au plus vite</ion-card-subtitle>
+      <ion-card-title>Connexion</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Phone number :</ion-label>
+        <ion-input required type="tel" placeholder="33 6 35 67 98 77" [(ngModel)]="phoneNumber.number"></ion-input>
+        <ion-icon name="call" slot="end"></ion-icon>
+      </ion-item>
+      <br>
+      <div class="recaptcha-block">
+        <div id="recaptcha-container"></div>
+      </div>
+      <div class="recaptcha-block">
+        <ion-button size=default (click)="sendLoginCode()">Send Me a Code</ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-item *ngIf="windowRef.confirmationResult && !user">
+      <div>
+        <hr>
+        <ion-label for="code">Enter your Verification Code Here</ion-label><br>
+        <ion-item>
+          <ion-input type="text" name="code" [(ngModel)]="verificationCode"></ion-input>
+        </ion-item>
+        <ion-button (click)="verifyLoginCode()">Verify</ion-button>
+      </div>
+    </ion-item>
+  </ion-card>
+  <ion-card>
+    <ion-item *ngIf="user">
+      <div>
+        You have successfully logged in with your phone number!
+        UserId: {{ user?.uid }}
+      </div>
+    </ion-item>
+  </ion-card>
+  <ion-button *ngIf="user" (click)="logoutplz()">Logout</ion-button>
+</ion-content>

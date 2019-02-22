@@ -11,6 +11,11 @@ const pages = [
     url: '/home',
     icon: 'home'
   },
+  {
+    title: 'Login',
+    url: '/login',
+    icon: 'login'
+  }
 ];
 
 @Component({
@@ -24,6 +29,11 @@ export class AppComponent {
       url: '/home',
       icon: 'home'
     },
+    {
+      title: 'List',
+      url: '/list',
+      icon: 'list'
+    }
   ];
 
   constructor(

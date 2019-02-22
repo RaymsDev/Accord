@@ -1,0 +1,75 @@
+import { Component, OnInit } from '@angular/core';
+import { PhoneNumber } from 'src/app/models/PhoneNumber';
+import { WindowService } from 'src/app/services/window.service';
+import * as firebase from 'firebase';
+import { AuthService } from 'src/app/services/auth.service';
+import { ToastController } from '@ionic/angular';
+import { async } from 'q';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
+})
+export class LoginPage implements OnInit {
+
+  windowRef: any;
+
+  phoneNumber = new PhoneNumber();
+
+  verificationCode: string;
+
+  user: any;
+
+  constructor(private win: WindowService, private authService: AuthService,
+    private _toastCtrl: ToastController) { }
+
+  ngOnInit() {
+    this.windowRef = this.win.windowRef;
+    this.windowRef.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
+    this.windowRef.recaptchaVerifier.render();
+    this.authService.User.subscribe((user) => this.user = user);
+  }
+
+
+  sendLoginCode() {
+
+    const appVerifier = this.windowRef.recaptchaVerifier;
+
+    const num = this.phoneNumber.e164;
+
+    this.authService.send_phone_code(num, appVerifier).subscribe(
+      (result) => {
+        this.windowRef.confirmationResult = result;
+      }, async error => {
+        (await this._toastCtrl.create({
+          message: 'Error append:' + error.message,
+          color: 'danger',
+          duration: 2000
+        })).present();
+      });
+  }
+
+  verifyLoginCode() {
+    this.authService.verify_phone_code(this.windowRef, this.verificationCode);
+    // this.windowRef.confirmationResult
+    //   .confirm(this.verificationCode)
+    //   .then(result => {
+    //     this.user = result.user;
+    //   })
+    //   .catch(async error => {
+    //     (await this._toastCtrl.create({
+    //       message: 'Error append: ' + error.message,
+    //       color: 'danger',
+    //       duration: 2000
+    //     })).present();
+    //   });
+  }
+
+  logoutplz() {
+    this.authService.logout();
+  }
+
+
+}
