@@ -10,11 +10,6 @@ const pages = [
     title: 'Home',
     url: '/home',
     icon: 'home'
-  },
-  {
-    title: 'Login',
-    url: '/login',
-    icon: 'login'
   }
 ];
 
@@ -23,18 +18,7 @@ const pages = [
   templateUrl: 'app.component.html'
 })
 export class AppComponent {
-  public appPages = [
-    {
-      title: 'Home',
-      url: '/home',
-      icon: 'home'
-    },
-    {
-      title: 'List',
-      url: '/list',
-      icon: 'list'
-    }
-  ];
+  public appPages = pages;
 
   constructor(
     private platform: Platform,
@@ -56,13 +40,14 @@ export class AppComponent {
   initRooms() {
     this.roomService.Rooms$.subscribe(rooms => {
       this.appPages = pages;
-      rooms.forEach(r => {
-        this.appPages.push({
-          title: r.name,
-          url: '/room/' + r.id,
-          icon: r.icon
+      rooms.sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(r => {
+          this.appPages.push({
+            title: r.name,
+            url: '/room/' + r.id,
+            icon: r.icon
+          });
         });
-      });
     });
   }
 }
