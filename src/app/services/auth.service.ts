@@ -3,7 +3,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable, from } from 'rxjs';
 
 import { ToastController } from '@ionic/angular';
-import { FirebaseAuth } from '@angular/fire';
 import { Router } from '@angular/router';
 
 

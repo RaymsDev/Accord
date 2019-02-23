@@ -1,14 +1,49 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title class="room-title" slot="primary">
-      {{ (Room$ |async )?.name }}
-    </ion-title>
-    <ion-icon name="{{(Room$ |async )?.icon}}" size="large" slot="end"></ion-icon>
+<ng-container *ngIf="Room$ | async as room">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title class="room-title" slot="primary">
+        {{ room.name }}
+      </ion-title>
+      <ion-icon name="{{room.icon}}" size="large" slot="end"></ion-icon>
 
-  </ion-toolbar>
-</ion-header>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content padding> </ion-content>
+  <ion-content padding>
+
+
+
+    <div class="chat">
+
+
+      <div class="message" [ngClass]="{'current-user': CurrentUser?.id==message.userId}"
+        *ngFor="let message of room.messages; trackBy: trackByCreated">
+
+        <div class="user">
+          <img *ngIf="!message.user?.pictureUrl; else hasPicture" class="avatar"
+            [src]="'https://api.adorable.io/avatars/285/'+ message.user?.email">
+          <ng-template #hasPicture>
+            <img class="avatar" [src]="message.user?.pictureUrl">
+          </ng-template>
+
+          <div class="name">{{ message.user?.nickname }}</div>
+        </div>
+
+        <p class="message-content">{{ message.content }}</p>
+
+      </div>
+
+    </div>
+
+    <div class="form">
+      <input [(ngModel)]="newMessage" (keydown.enter)="SendMessage(room.id)">
+
+      <button (click)="SendMessage(room.id)">Send</button>
+    </div>
+
+
+  </ion-content>
+</ng-container>
