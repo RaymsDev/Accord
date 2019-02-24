@@ -1,39 +1,63 @@
-.room-title{
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    justify-content: center;
+@import "./../../theme/variables.scss";
+$space: 16px;
+.room-title {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
 }
 
-.chat{
-    display: flex;
-    flex-direction: column;
-
+.chat {
+  display: flex;
+  flex-direction: column;
 }
 
-.message{
-    .user{
-        .avatar{
-            height: 50px;
-            width: auto;
-            border-radius: 50%;
-        }
-        .name{
-            
-        }
-    }
-}
-
-.message.current-user{
-    .user{
+.message-container {
+  display: flex;
+  width: 100%;
+  .avatar {
+    height: 50px;
+    width: auto;
+    border-radius: 50%;
+  }
+  .message {
+    max-width: 60%;
+    padding: 0 0 0 $space;
+    .message-details {
+      display: flex;
+      width: 100%;
+      .name {
+        font-weight: bold;
+      }
+      .send-at {
+        padding: 0 4px 0 4px;
         display: flex;
-        flex-direction: column;
+        color: $medium;
+        font-size: 0.8em;
         align-items: flex-end;
-        .name{
-            text-align: right;
-        }
+      }
+      .message-content {
+        width: 100%;
+      }
     }
-    .message-content{
-        text-align: right
+  }
+}
+
+.message-container.current-user {
+  flex-direction: row-reverse;
+  .message {
+    padding: 0 $space 0 0;
+    .message-details {
+      flex-direction: row-reverse;
     }
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: row;
+  background-color: $tertiary;
+  .message-input {
+    color: $light;
+  }
 }

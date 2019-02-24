@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -17,8 +17,11 @@
       <ion-card-title>Welcome to Ionic</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>Now that your app has been created, you'll want to start building out features and components. Check out some
-        of the resources below for next steps.</p>
+      <p>
+        Now that your app has been created, you'll want to start building out
+        features and components. Check out some of the resources below for next
+        steps.
+      </p>
     </ion-card-content>
   </ion-card>
   <ion-list lines="none">
@@ -46,7 +49,9 @@
 
 <ion-content>
   <ion-item>
-    <ion-button *ngIf="!user" color="primary" (click)="login()">Connect Anonimousemy</ion-button>
-    <h3 *ngIf="user">bONJOUR {{user}}</h3>
+    <ion-button *ngIf="!user" color="primary" (click)="login()"
+      >Connect Anonimousemy</ion-button
+    >
+    <h3 *ngIf="user">bONJOUR {{ user }}</h3>
   </ion-item>
 </ion-content>
