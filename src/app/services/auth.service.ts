@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/auth/auth';
 import { Observable, from } from 'rxjs';
 
 import { ToastController } from '@ionic/angular';

@@ -1,21 +1,22 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
-import { Platform } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { RoomService } from './services/room.service';
+import { Platform } from "@ionic/angular";
+import { SplashScreen } from "@ionic-native/splash-screen/ngx";
+import { StatusBar } from "@ionic-native/status-bar/ngx";
+import { RoomService } from "./services/room.service";
 
 const pages = [
   {
-    title: 'Home',
-    url: '/home',
-    icon: 'home'
+    title: "Home",
+    url: "/home",
+    icon: "home"
   }
 ];
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html'
+  selector: "app-root",
+  templateUrl: "app.component.html",
+  styleUrls: ["./app.component.scss"]
 })
 export class AppComponent {
   public appPages = pages;
@@ -40,11 +41,12 @@ export class AppComponent {
   initRooms() {
     this.roomService.Rooms$.subscribe(rooms => {
       this.appPages = pages;
-      rooms.sort((a, b) => a.name.localeCompare(b.name))
+      rooms
+        .sort((a, b) => a.name.localeCompare(b.name))
         .forEach(r => {
           this.appPages.push({
             title: r.name,
-            url: '/room/' + r.id,
+            url: "/room/" + r.id,
             icon: r.icon
           });
         });
