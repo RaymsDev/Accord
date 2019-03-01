@@ -11,7 +11,19 @@ pool:
 
 variables:
   imageName: 'accord:$(build.buildId)'
+  containerName : 'ionic-apk-builder$($(build.buildId))'
 
 steps:
 - script: docker build -f Dockerfile -t $(imageName) .
   displayName: 'docker build'
+
+- script: docker run --name $(containerName) $(imageName)
+  displayName: 'docker run'
+
+- script: docker cp accord.apk $(containerName):/usr/app/accord.apk
+  displayName: 'docker copy apk'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: apk
