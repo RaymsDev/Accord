@@ -1,5 +1,9 @@
 @import "./../theme/variables.scss";
 
-.side-menu {
+.side-menu, .menu-footer {
   background-color: $tertiary;
+}
+
+.menu-logout-btn {
+  display: flex;
 }
