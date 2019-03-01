@@ -10,13 +10,18 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "android": "npx ionic cordova run android -l",
     "dev": "npx ionic serve",
     "platforms": "npx ionic cordova prepare",
     "build-prod": "npx ionic cordova build android --prod --release",
     "clean": "npx rimraf ./www && npx rimraf ./platforms && npx rimraf ./plugins",
     "generate-key": "keytool -genkey -v -keystore accord-release-key.keystore -alias accord-r-k -keyalg RSA -keysize 2048 -validity 10000",
     "sign-apk": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore accord-release-key.keystore app-release-unsigned.apk accord-r-k",
-    "zip-align": "zipalign -v 4 accord-release-unsigned.apk accord.apk"
+    "zip-align": "zipalign -v 4 accord-release-unsigned.apk accord.apk",
+    "docker-build": "docker build --rm -f \"dockerfile\" -t accord:latest .",
+    "docker-run": "docker run --name ionic-apk-builder accord",
+    "docker-cp": "docker cp accord.apk ionic-apk-builder:/usr/app/accord.apk",
+    "docker-apk": "npm run docker-build && npm run docker-cp && npm run docker-apk"
   },
   "private": true,
   "dependencies": {
@@ -29,6 +34,7 @@
     "@angular/platform-browser-dynamic": "^7.2.2",
     "@angular/router": "^7.2.2",
     "@ionic-native/core": "^5.0.0",
+    "@ionic-native/firebase": "^5.2.0",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.0.0",
@@ -37,6 +43,7 @@
     "cordova-plugin-appcenter-crashes": "^0.3.2",
     "cordova-plugin-appcenter-shared": "^0.3.2",
     "cordova-plugin-device": "^2.0.2",
+    "cordova-plugin-firebase": "2.0.5",
     "cordova-plugin-ionic-keyboard": "^2.1.3",
     "cordova-plugin-ionic-webview": "^2.4.0",
     "cordova-plugin-splashscreen": "^5.0.2",
@@ -87,7 +94,8 @@
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-appcenter-analytics": {},
-      "cordova-plugin-appcenter-crashes": {}
+      "cordova-plugin-appcenter-crashes": {},
+      "cordova-plugin-firebase": {}
     },
     "platforms": [
       "android"
