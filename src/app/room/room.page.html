@@ -1,14 +1,58 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title class="room-title" slot="primary">
-      {{ (Room$ |async )?.name }}
-    </ion-title>
-    <ion-icon name="{{(Room$ |async )?.icon}}" size="large" slot="end"></ion-icon>
+<ng-container *ngIf="(Room$ | async) as room">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title class="room-title" slot="primary">
+        {{ room.name }}
+      </ion-title>
+      <ion-icon name="{{ room.icon }}" size="large" slot="end"></ion-icon>
+    </ion-toolbar>
+  </ion-header>
 
-  </ion-toolbar>
-</ion-header>
+  <ion-content #content padding color="dark">
+    <div class="chat">
+      <div
+        class="message-container"
+        [ngClass]="{ 'current-user': CurrentUser?.id == message.userId }"
+        *ngFor="let message of room.messages; trackBy: trackByCreated"
+      >
+        <img
+          *ngIf="!message.user?.pictureUrl; else hasPicture"
+          class="avatar"
+          [src]="'https://api.adorable.io/avatars/285/' + message.user?.email"
+        />
+        <ng-template #hasPicture>
+          <img class="avatar" [src]="message.user?.pictureUrl" />
+        </ng-template>
 
-<ion-content padding> </ion-content>
+        <div class="message">
+          <div class="message-details">
+            <div class="name">{{ message.user?.nickname }}</div>
+            <div class="send-at">{{ message.createdAt }}</div>
+          </div>
+
+          <p class="message-content">{{ message.content }}</p>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+  <ion-footer>
+    <footer class="form">
+      <ion-input
+        class="message-input"
+        [(ngModel)]="newMessage"
+        (keydown.enter)="SendMessage(room.id)"
+      ></ion-input>
+
+      <ion-button
+        class="send-button"
+        color="secondary"
+        (click)="SendMessage(room.id)"
+      >
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </footer>
+  </ion-footer>
+</ng-container>

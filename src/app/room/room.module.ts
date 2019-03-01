@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
-
 import { RoomPage } from './room.page';
+
 
 const routes: Routes = [
   {
@@ -23,4 +23,4 @@ const routes: Routes = [
   ],
   declarations: [RoomPage]
 })
-export class RoomPageModule {}
+export class RoomPageModule { }
