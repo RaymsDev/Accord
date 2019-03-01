@@ -18,7 +18,7 @@
           </ion-menu-toggle>
         </ion-list>
       </ion-content>
-      <ion-footer class="menu-footer">
+      <ion-footer *ngIf="user" class="menu-footer">
         <ion-button class="menu-logout-btn" color="danger" (click)="logout()">Logout</ion-button>
       </ion-footer>
     </ion-menu>
