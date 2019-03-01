@@ -21,6 +21,7 @@ const pages = [
 })
 export class AppComponent {
   public appPages = pages;
+  private user = null;
 
   constructor(
     private platform: Platform,
@@ -30,6 +31,7 @@ export class AppComponent {
     private authService: AuthService
   ) {
     this.initializeApp();
+    this.authService.userObservable.subscribe((user) => this.user = user);
   }
 
   initializeApp() {
