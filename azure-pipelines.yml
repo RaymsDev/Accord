@@ -19,7 +19,13 @@ steps:
 - task: DownloadSecureFile@1
   inputs:
     secureFile: accord-release-key.keystore
+
+- task: DownloadSecureFile@1
+  inputs:
     secureFile: firebase.config.ts
+
+- task: DownloadSecureFile@1
+  inputs:
     secureFile: google-services.json
 
 # Copy Files
