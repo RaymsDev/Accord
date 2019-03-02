@@ -32,7 +32,7 @@ steps:
 # Copy files from source folder to target folder using match patterns (The match patterns will only match file paths, not folder paths)
 - task: CopyFiles@2
   inputs:
-    sourceFolder: $(Agent.TempDirectory)
+    sourceFolder: $(Build.SourcesDirectory)
     contents: '**/firebase.config.ts' 
     targetFolder: $(Build.SourcesDirectory)/src/environments
     #cleanTargetFolder: false # Optional
