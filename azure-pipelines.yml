@@ -14,6 +14,34 @@ variables:
   containerName : 'ionic-apk-builder$($(build.buildId))'
 
 steps:
+# Download Secure File
+# Download a secure file to a temporary location on the build or release agent
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: accord-release-key.keystore
+    secureFile: firebase.config.ts
+    secureFile: google-services.json
+
+# Copy Files
+# Copy files from source folder to target folder using match patterns (The match patterns will only match file paths, not folder paths)
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(Agent.TempDirectory)
+    contents: '**/firebase.config.ts' 
+    targetFolder: $(Build.SourcesDirectory)/src/environments
+    #cleanTargetFolder: false # Optional
+    overWrite: true # Optional
+    #flattenFolders: false # Optional
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(Agent.TempDirectory)
+    contents: '**' 
+    targetFolder: $(Build.SourcesDirectory)
+    #cleanTargetFolder: false # Optional
+    overWrite: true # Optional
+    #flattenFolders: false # Optional
+
 - script: docker build -f Dockerfile -t $(imageName) .
   displayName: 'docker build'
 
