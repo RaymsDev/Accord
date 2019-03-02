@@ -54,7 +54,7 @@ steps:
 - script: docker run --name $(containerName) $(imageName)
   displayName: 'docker run'
 
-- script: docker cp accord.apk $(containerName):/usr/app/accord.apk
+- script: docker cp $(containerName):/usr/app/accord.apk accord.apk
   displayName: 'docker copy apk'
 
 - task: PublishBuildArtifacts@1
