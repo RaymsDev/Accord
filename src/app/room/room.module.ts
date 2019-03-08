@@ -2,10 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-
+import { TimeStampToDatePipe } from '../pipes/time-stamp-to-date.pipe';
 import { IonicModule } from '@ionic/angular';
 import { RoomPage } from './room.page';
-
 
 const routes: Routes = [
   {
@@ -21,6 +20,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [RoomPage]
+  declarations: [RoomPage, TimeStampToDatePipe]
 })
-export class RoomPageModule { }
+export class RoomPageModule {}

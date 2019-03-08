@@ -61,19 +61,17 @@ export class AppComponent {
     if (this.platform.is('mobile')) {
       this.firebase.subscribe('all');
 
-      this.firebase.onNotificationOpen()
-        .subscribe(async response => {
-          if (response.tap) {
+      this.firebase.onNotificationOpen().subscribe(async response => {
+        if (response.tap) {
+        } else {
+          const toast = await this.toaster.create({
+            message: response.body,
+            duration: 3000
+          });
 
-          } else {
-            const toast = await this.toaster.create({
-              message: response.body,
-              duration: 3000
-            });
-
-            toast.present();
-          }
-        });
+          toast.present();
+        }
+      });
     }
   }
 }

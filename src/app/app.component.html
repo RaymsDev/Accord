@@ -10,9 +10,17 @@
         <ion-list class="side-menu">
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
             <ion-item [routerLink]="[p.url]" color="tertiary">
-              <ion-icon slot="start" [name]="p.icon"></ion-icon>
+              <ion-icon slot="start" [name]="p.icon || 'chatboxes'"></ion-icon>
               <ion-label>
                 {{ p.title }}
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item [routerLink]="'/room/create'" color="secondary">
+              <ion-icon slot="start" name="add"></ion-icon>
+              <ion-label>
+                Create Room
               </ion-label>
             </ion-item>
           </ion-menu-toggle>

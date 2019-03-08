@@ -31,7 +31,9 @@ export class RoomPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.content.scrollToBottom(300);
+    if (this.content) {
+      this.content.scrollToBottom(300);
+    }
   }
 
   private initRoom() {

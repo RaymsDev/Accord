@@ -20,7 +20,7 @@
     "zip-align": "zipalign -v 4 accord-release-unsigned.apk accord.apk",
     "docker-build": "docker build --rm -f \"dockerfile\" -t accord:latest .",
     "docker-run": "docker run --name ionic-apk-builder accord",
-    "docker-cp": "docker cp accord.apk ionic-apk-builder:/usr/app/accord.apk",
+    "docker-cp": "docker cp ionic-apk-builder:/usr/app/accord.apk accord.apk",
     "docker-apk": "npm run docker-build && npm run docker-cp && npm run docker-apk"
   },
   "private": true,
