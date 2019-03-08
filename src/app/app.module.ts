@@ -20,6 +20,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { RoomService } from './services/room.service';
 
 import { Firebase } from '@ionic-native/firebase/ngx/';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -41,4 +42,4 @@ import { Firebase } from '@ionic-native/firebase/ngx/';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

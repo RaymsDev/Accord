@@ -30,7 +30,7 @@
         <div class="message">
           <div class="message-details">
             <div class="name">{{ message.user?.nickname }}</div>
-            <div class="send-at">{{ message.createdAt }}</div>
+            <div class="send-at">{{ message.createdAt | timeStampToDate }}</div>
           </div>
 
           <p class="message-content">{{ message.content }}</p>
