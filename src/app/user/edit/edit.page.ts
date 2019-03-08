@@ -27,7 +27,6 @@ export class EditPage implements OnInit {
   }
 
   updateInfo() {
-    console.log('TOIO');
     this.newUser ? this.userService.AddUser(this.user) : this.userService.UpdateUser(this.user);
   }
 }
