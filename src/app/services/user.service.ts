@@ -17,7 +17,7 @@ export class UserService {
 
   private userCollection: AngularFirestoreCollection<IUser>;
 
-  constructor(private authService: AuthService, private afStore: AngularFirestore) {
+  constructor(private authService: AuthService, private afStore: AngularFirestore, private) {
     this.userCollection = this.afStore.collection<IUser>(environment.endpoints.users);
   }
 
@@ -95,5 +95,9 @@ export class UserService {
     this.afStore.collection(environment.endpoints.users).doc(user.uid).update({
       ...user
     });
+  }
+
+  public sendProfileImg(file: string) {
+    this.afStore.
   }
 }

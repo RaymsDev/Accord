@@ -22,7 +22,8 @@
   </ion-item>
 
   <ion-item>
-    <ion-label>Picture</ion-label>
+    <ion-label>Picture Url: </ion-label>
+    <ion-input type="file" [(ngModel)]="user.pictureUrl"></ion-input>
   </ion-item>
 
   <ion-button color="success" (click)="updateInfo()">Set</ion-button>
