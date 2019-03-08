@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { AuthService } from './services/auth.service';
 import { Platform, ToastController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -21,16 +22,19 @@ const pages = [
 })
 export class AppComponent {
   public appPages = pages;
+  private user = null;
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private roomService: RoomService,
+    private authService: AuthService,
     private firebase: Firebase,
     private toaster: ToastController
   ) {
     this.initializeApp();
+    this.authService.userObservable.subscribe((user) => this.user = user);
   }
 
   initializeApp() {
@@ -57,6 +61,9 @@ export class AppComponent {
     });
   }
 
+  logout() {
+    this.authService.logout();
+  }
   private initNotifications() {
     if (this.platform.is('mobile')) {
       this.firebase.subscribe('all');
