@@ -61,10 +61,9 @@ export class AppComponent {
     });
   }
 
-<<<<<<< HEAD
   logout() {
     this.authService.logout();
-=======
+  }
   private initNotifications() {
     if (this.platform.is('mobile')) {
       this.firebase.subscribe('all');
@@ -83,6 +82,5 @@ export class AppComponent {
           }
         });
     }
->>>>>>> develop
   }
 }
