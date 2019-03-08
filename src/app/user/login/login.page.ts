@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PhoneNumber } from 'src/app/models/PhoneNumber';
 import { WindowService } from 'src/app/services/window.service';
 import * as firebase from 'firebase';
 import { AuthService } from 'src/app/services/auth.service';
 import { ToastController } from '@ionic/angular';
 import { async } from 'q';
+import { SignupComponent } from '../signup/signup.component';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginPage implements OnInit {
   verificationCode: string;
 
   user: any;
+  @ViewChild(SignupComponent) signup;
 
   constructor(private win: WindowService, private authService: AuthService,
     private _toastCtrl: ToastController) { }
@@ -53,22 +55,14 @@ export class LoginPage implements OnInit {
 
   verifyLoginCode() {
     this.authService.verify_phone_code(this.windowRef, this.verificationCode);
-    // this.windowRef.confirmationResult
-    //   .confirm(this.verificationCode)
-    //   .then(result => {
-    //     this.user = result.user;
-    //   })
-    //   .catch(async error => {
-    //     (await this._toastCtrl.create({
-    //       message: 'Error append: ' + error.message,
-    //       color: 'danger',
-    //       duration: 2000
-    //     })).present();
-    //   });
   }
 
   logoutplz() {
     this.authService.logout();
+  }
+
+  showPseudo() {
+    console.log('User pseudo' + this.signup.pseudo);
   }
 
 

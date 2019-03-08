@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { IRoom } from '../models/IRoom';
-import { RoomService } from '../services/room.service';
-import { UserService } from '../services/user.service';
-import { AuthService } from '../services/auth.service';
+import { IRoom } from 'src/app/models/IRoom';
+import { RoomService } from 'src/app/services/room.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-create-room',
-  templateUrl: './create-room.page.html',
-  styleUrls: ['./create-room.page.scss']
+  selector: 'app-edit-room',
+  templateUrl: './edit-room.page.html',
+  styleUrls: ['./edit-room.page.scss']
 })
-export class CreateRoomPage implements OnInit {
+export class EditRoomPage implements OnInit {
   public Form: FormGroup;
   private room: IRoom = {
     icon: 'chatboxes',

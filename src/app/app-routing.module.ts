@@ -22,15 +22,16 @@ const routes: Routes = [
     loadChildren: './user/login/login.module#LoginPageModule'
   },
   {
-    path: 'room/create',
-    loadChildren: './create-room/create-room.module#CreateRoomPageModule',
+    path: 'room',
+    loadChildren: './room/room.module#RoomPageModule',
     canActivate: [AuthGuard]
   },
   {
-    path: 'room/:id',
-    loadChildren: './room/room.module#RoomPageModule',
+    path: 'user/edit',
+    loadChildren: './user/edit/edit.module#EditPageModule',
     canActivate: [AuthGuard]
   }
+
 ];
 
 @NgModule({
