@@ -25,7 +25,7 @@ export class RoomPage implements OnInit {
 
   ngOnInit() {
     this.initRoom();
-    this.userService.CurrentUser$().subscribe(authUser => {
+    this.userService.CurrentUser$.subscribe(authUser => {
       this.CurrentUser = authUser;
     });
   }

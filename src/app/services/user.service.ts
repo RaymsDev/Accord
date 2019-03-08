@@ -24,7 +24,7 @@ export class UserService {
     );
   }
 
-  public CurrentUser$(): Observable<IUser> {
+  public get CurrentUser$(): Observable<IUser> {
     return this.authService.userObservable.pipe(
       flatMap(user => this.UserByUid$(user.uid))
     );

@@ -9,6 +9,7 @@ import { IMessage } from '../models/IMessage';
 import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/collection';
 import { UserService } from './user.service';
 import { IUser } from '../models/IUser';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,27 @@ export class RoomService {
           : [];
 
         return room;
+      })
+    );
+  }
+
+  get Owned$(): Observable<IRoom[]> {
+    return this.userService.CurrentUser$.pipe(
+      switchMap(user => {
+        return this.afStore
+          .collection<IRoom>(environment.endpoints.rooms, ref =>
+            ref.where('ownerId', '==', user.id)
+          )
+          .snapshotChanges()
+          .pipe(
+            map(actions =>
+              actions.map(a => {
+                const data = a.payload.doc.data() as IRoom;
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              })
+            )
+          );
       })
     );
   }

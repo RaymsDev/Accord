@@ -10,7 +10,8 @@ const initialRoom: IRoom = {
   icon: 'chatboxes',
   name: '',
   messages: [],
-  ownerId: null
+  ownerId: null,
+  memberIdList: []
 };
 
 @Component({

@@ -6,6 +6,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { RoomService } from './services/room.service';
 import { Firebase } from '@ionic-native/firebase/ngx';
+import { User } from 'firebase';
+import { UserService } from './services/user.service';
 
 const pages = [
   {
@@ -29,12 +31,15 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private roomService: RoomService,
+    private userService: UserService,
     private authService: AuthService,
     private firebase: Firebase,
     private toaster: ToastController
   ) {
     this.initializeApp();
-    this.authService.userObservable.subscribe(user => (this.User = user));
+    this.userService.CurrentUser$.subscribe(user => {
+      this.User = user;
+    });
   }
 
   initializeApp() {
@@ -47,8 +52,8 @@ export class AppComponent {
   }
 
   initRooms() {
-    this.roomService.Rooms$.subscribe(rooms => {
-      this.appPages = pages;
+    this.roomService.Owned$.subscribe(rooms => {
+      this.appPages = [...pages];
       rooms
         .sort((a, b) => a.name.localeCompare(b.name))
         .forEach(r => {
