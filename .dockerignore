@@ -1,5 +1,11 @@
+
+.vscode/
 e2e/
 node_modules/
 platforms/
 plugins/
 www/
+
+.gitignore
+.dockerignore
+Dockerfile
