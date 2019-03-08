@@ -45,13 +45,7 @@
       <ion-label>Theme Your App</ion-label>
     </ion-item>
   </ion-list>
-</ion-content>
-
-<ion-content>
-  <ion-item>
-    <ion-button *ngIf="!user" color="primary" (click)="login()"
-      >Connect Anonimousemy</ion-button
-    >
-    <h3 *ngIf="user">bONJOUR {{ user }}</h3>
+  <ion-item *ngIf="user">
+    Display name is {{user.displayName}}
   </ion-item>
 </ion-content>

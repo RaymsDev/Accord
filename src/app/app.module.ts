@@ -20,9 +20,10 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { RoomService } from './services/room.service';
 
 import { Firebase } from '@ionic-native/firebase/ngx/';
+import { PhoneInputComponent } from './user/phone-input/phone-input.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, PhoneInputComponent],
   entryComponents: [],
   imports: [
     BrowserModule,

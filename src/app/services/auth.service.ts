@@ -4,6 +4,12 @@ import { Observable, from } from 'rxjs';
 
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { async } from 'q';
+import { UserService } from './user.service';
+import { IUser } from '../models/IUser';
+import { environment } from 'src/environments/environment.prod';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { map } from 'rxjs/operators';
 
 
 @Injectable({
@@ -13,14 +19,16 @@ export class AuthService {
 
   user: firebase.User;
   userObservable: Observable<firebase.User>;
+  authObservable: Observable<firebase.auth.Auth>;
 
-  constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController, private router: Router) {
-    firebaseAuth.authState.subscribe((auth) => this.user = auth);
+  constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController,
+    private router: Router, private afStore: AngularFirestore) {
+    this.firebaseAuth.authState.subscribe((auth) => this.user = auth);
     this.userObservable = firebaseAuth.authState;
   }
 
   get authenticated(): boolean {
-    return this.user !== null;
+    return this.user !== null && this.user !== undefined;
   }
 
   get User(): Observable<firebase.User> {
@@ -31,72 +39,53 @@ export class AuthService {
     return this.authenticated ? this.user : null;
   }
 
+  get currentUserObservable(): any {
+    return this.firebaseAuth.authState;
+  }
+
   // Returns current user UID
   get currentUserId(): string {
     return this.authenticated ? this.user.uid : '';
-  }
-
-  loginAnonimous() {
-    this.firebaseAuth.auth.signInAnonymously().then(async _ => {
-      (await this.toastCtrl.create({
-        message: 'You well connect',
-        color: 'success',
-        duration: 2000
-      })).present();
-    }).catch(async err => {
-      (await this.toastCtrl.create({
-        message: 'Auth Fail',
-        color: 'danger',
-        duration: 2000
-      })).present();
-    });
-  }
-
-  signup_mail_psw(email: string, password: string) {
-    this.firebaseAuth
-      .auth
-      .createUserWithEmailAndPassword(email, password)
-      .then(value => {
-        console.log('Success!', value);
-      })
-      .catch(err => {
-        console.log('Something went wrong:', err.message);
-      });
-  }
-
-  login_mail_psw(email: string, password: string) {
-    this.firebaseAuth
-      .auth
-      .signInWithEmailAndPassword(email, password)
-      .then(value => {
-        console.log('Nice, it worked!');
-      })
-      .catch(err => {
-        console.log('Something went wrong:', err.message);
-      });
   }
 
   send_phone_code(num, appVerifier): Observable<any> {
     return from(this.firebaseAuth.auth.signInWithPhoneNumber(num, appVerifier));
   }
 
-  verify_phone_code(windowsRef, verificationCode) {
-    // Check code
-    windowsRef.confirmationResult
+  async verify_phone_code(windowsRef, verificationCode) {
+    await windowsRef.confirmationResult
       .confirm(verificationCode)
-      .then(result => {
-        console.log(result, 'Well done you are in ! :)');
-        this.router.navigate(['/']);
+      .then(async result => {
+        (await this.toastCtrl.create({
+          message: 'Welcome',
+          color: 'success',
+          duration: 1500
+        })).present();
+        this.checkUserInfoAndRedirect();
       })
-      .catch(error => console.log(error, 'Incorrect code entered!'));
-
-    // Root to homepage if success
+      .catch(async error => {
+        (await this.toastCtrl.create({
+          message: 'Welcome',
+          color: 'danger',
+          duration: 1500
+        })).present();
+      });
   }
 
   logout() {
     this.firebaseAuth
       .auth
       .signOut();
+    this.router.navigate(['/']);
   }
 
+  checkUserInfoAndRedirect() {
+    this.afStore.collection(environment.endpoints.users).doc(this.user.uid).get().toPromise().then((userData) => {
+      if (userData.exists) {
+        this.router.navigate(['/']);
+      } else {
+        this.router.navigate(['/user/edit']);
+      }
+    });
+  }
 }
