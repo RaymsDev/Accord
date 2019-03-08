@@ -117,6 +117,8 @@ export class RoomService {
     );
   }
 
+  RemoveRoom() {}
+
   CreateRoom(room: IRoom) {
     return this.roomCollection.add(room);
   }
