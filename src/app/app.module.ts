@@ -18,6 +18,8 @@ import { environment } from 'src/environments/environment';
 
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { RoomService } from './services/room.service';
+
+import { Firebase } from '@ionic-native/firebase/ngx/';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -34,7 +36,8 @@ import { RoomService } from './services/room.service';
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     AuthService,
-    RoomService
+    RoomService,
+    Firebase
   ],
   bootstrap: [AppComponent]
 })

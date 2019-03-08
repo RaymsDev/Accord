@@ -1,4 +1,5 @@
-FROM beevelop/ionic:v4.10.3 as builder
+
+FROM rayms/ionicbuilder:latest as builder
 
 COPY package*.json ./
 
@@ -16,7 +17,7 @@ RUN npm run platforms
 
 RUN npm run build-prod
 
-FROM beevelop/ionic:v4.10.3 as signer
+FROM builder as signer
 
 RUN mkdir -p /usr/app
 
@@ -25,8 +26,8 @@ WORKDIR /usr/app
 COPY --from=builder /usr/src/app/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk ./
 COPY ./accord-release-key.keystore ./
 
-COPY package.json ./
+RUN jarsigner -keypass password -storepass password -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore accord-release-key.keystore app-release-unsigned.apk accord-r-k
 
-RUN npm run sign-apk
+RUN zipalign -v 4 ./app-release-unsigned.apk accord.apk
 
-RUN npm run zip-align
+CMD ["/bin/bash"]

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 
-import { Platform } from '@ionic/angular';
+import { AuthService } from './services/auth.service';
+import { Platform, ToastController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { RoomService } from './services/room.service';
-import { AuthService } from './services/auth.service';
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 const pages = [
   {
@@ -28,7 +29,9 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private roomService: RoomService,
-    private authService: AuthService
+    private authService: AuthService,
+    private firebase: Firebase,
+    private toaster: ToastController
   ) {
     this.initializeApp();
     this.authService.userObservable.subscribe((user) => this.user = user);
@@ -38,6 +41,7 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.initNotifications();
       this.initRooms();
     });
   }
@@ -57,7 +61,28 @@ export class AppComponent {
     });
   }
 
+<<<<<<< HEAD
   logout() {
     this.authService.logout();
+=======
+  private initNotifications() {
+    if (this.platform.is('mobile')) {
+      this.firebase.subscribe('all');
+
+      this.firebase.onNotificationOpen()
+        .subscribe(async response => {
+          if (response.tap) {
+
+          } else {
+            const toast = await this.toaster.create({
+              message: response.body,
+              duration: 3000
+            });
+
+            toast.present();
+          }
+        });
+    }
+>>>>>>> develop
   }
 }

@@ -1,0 +1,63 @@
+# Docker image
+# Build a Docker image to deploy, run, or push to a container registry.
+# Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+  imageName: 'accord:$(build.buildId)'
+  containerName : 'ionic-apk-builder$($(build.buildId))'
+
+steps:
+# Download Secure File
+# Download a secure file to a temporary location on the build or release agent
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: accord-release-key.keystore
+
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: firebase.config.ts
+
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: google-services.json
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(Agent.TempDirectory)
+    contents: '**' 
+    targetFolder: $(Build.SourcesDirectory)
+    #cleanTargetFolder: false # Optional
+    overWrite: true # Optional
+    #flattenFolders: false # Optional
+
+# Copy Files
+# Copy files from source folder to target folder using match patterns (The match patterns will only match file paths, not folder paths)
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)
+    contents: '**/firebase.config.ts' 
+    targetFolder: $(Build.SourcesDirectory)/src/environments
+    #cleanTargetFolder: false # Optional
+    overWrite: true # Optional
+    #flattenFolders: false # Optional
+
+- script: docker build -f Dockerfile -t $(imageName) .
+  displayName: 'docker build'
+
+- script: docker run --name $(containerName) $(imageName)
+  displayName: 'docker run'
+
+- script: docker cp $(containerName):/usr/app/accord.apk accord.apk
+  displayName: 'docker copy apk'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: $(Build.SourcesDirectory)/**/*.apk
+    artifactName: apk
