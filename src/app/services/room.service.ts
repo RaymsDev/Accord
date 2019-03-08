@@ -117,7 +117,9 @@ export class RoomService {
     );
   }
 
-  RemoveRoom() {}
+  Remove(id: string) {
+    this.roomCollection.doc(id).delete();
+  }
 
   CreateRoom(room: IRoom) {
     return this.roomCollection.add(room);

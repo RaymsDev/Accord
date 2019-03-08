@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IRoom } from '../models/IRoom';
 import { RoomService } from '../services/room.service';
 import { Observable } from 'rxjs/internal/Observable';
@@ -18,8 +18,10 @@ export class RoomPage implements OnInit {
   public CurrentUser: IUser;
   public Room$: Observable<IRoom>;
   public newMessage: string;
+  private roomId: string;
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private roomService: RoomService,
     private userService: UserService,
     private actionSheetController: ActionSheetController
@@ -39,8 +41,8 @@ export class RoomPage implements OnInit {
   }
 
   private initRoom() {
-    const roomId = this.route.snapshot.paramMap.get('id');
-    this.Room$ = this.roomService.JoinUser(roomId);
+    this.roomId = this.route.snapshot.paramMap.get('id');
+    this.Room$ = this.roomService.JoinUser(this.roomId);
   }
 
   public SendMessage(roomId: string) {
@@ -60,8 +62,9 @@ export class RoomPage implements OnInit {
           text: 'Delete',
           role: 'destructive',
           icon: 'trash',
-          handler: () => {
-            console.log('Delete clicked');
+          handler: async () => {
+            await this.roomService.Remove(this.roomId);
+            this.router.navigate(['/']);
           }
         },
         {
