@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { IMessage } from '../models/IMessage';
 import { UserService } from '../services/user.service';
 import { IUser } from '../models/IUser';
+import { PopoverController, ActionSheetController } from '@ionic/angular';
 
 @Component({
   selector: 'app-room',
@@ -20,18 +21,21 @@ export class RoomPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private roomService: RoomService,
-    private userService: UserService
+    private userService: UserService,
+    private actionSheetController: ActionSheetController
   ) {}
 
   ngOnInit() {
     this.initRoom();
-    this.userService.CurrentUser$().subscribe(authUser => {
+    this.userService.CurrentUser$.subscribe(authUser => {
       this.CurrentUser = authUser;
     });
   }
 
   ionViewDidEnter() {
-    this.content.scrollToBottom(300);
+    if (this.content) {
+      this.content.scrollToBottom(300);
+    }
   }
 
   private initRoom() {
@@ -44,7 +48,32 @@ export class RoomPage implements OnInit {
     this.newMessage = '';
   }
 
-  public trackByCreated(i, message: IMessage) {
+  public TrackByCreatedAt(i, message: IMessage) {
     return message.createdAt;
+  }
+
+  public async OnMoreButtonClick() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Room Actions',
+      buttons: [
+        {
+          text: 'Delete',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            console.log('Delete clicked');
+          }
+        },
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel',
+          handler: () => {
+            actionSheet.dismiss();
+          }
+        }
+      ]
+    });
+    await actionSheet.present();
   }
 }

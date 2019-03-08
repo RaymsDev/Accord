@@ -22,7 +22,7 @@ const routes: Routes = [
     loadChildren: './user/login/login.module#LoginPageModule'
   },
   {
-    path: 'room/:id',
+    path: 'room',
     loadChildren: './room/room.module#RoomPageModule',
     canActivate: [AuthGuard]
   },
@@ -38,4 +38,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
