@@ -5,6 +5,11 @@ import { Observable, from } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { async } from 'q';
+import { UserService } from './user.service';
+import { IUser } from '../models/IUser';
+import { environment } from 'src/environments/environment.prod';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { map } from 'rxjs/operators';
 
 
 @Injectable({
@@ -16,16 +21,15 @@ export class AuthService {
   userObservable: Observable<firebase.User>;
   authObservable: Observable<firebase.auth.Auth>;
 
-  constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController, private router: Router) {
-    firebaseAuth.authState.subscribe((auth) => this.user = auth);
+  constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController,
+    private router: Router, private afStore: AngularFirestore) {
+    this.firebaseAuth.authState.subscribe((auth) => this.user = auth);
     this.userObservable = firebaseAuth.authState;
   }
 
   get authenticated(): boolean {
-    return this.user !== null;
+    return this.user !== null && this.user !== undefined;
   }
-
-
 
   get User(): Observable<firebase.User> {
     return this.userObservable;
@@ -33,6 +37,10 @@ export class AuthService {
 
   get currentUser(): any {
     return this.authenticated ? this.user : null;
+  }
+
+  get currentUserObservable(): any {
+    return this.firebaseAuth.authState;
   }
 
   // Returns current user UID
@@ -45,40 +53,39 @@ export class AuthService {
   }
 
   async verify_phone_code(windowsRef, verificationCode) {
-    // Check code
     await windowsRef.confirmationResult
       .confirm(verificationCode)
-      .then(result => {
-        // TODO Add toaster
-        console.log(result, 'Well done you are in ! :)');
-        this.router.navigate(['/']);
+      .then(async result => {
+        (await this.toastCtrl.create({
+          message: 'Welcome',
+          color: 'success',
+          duration: 1500
+        })).present();
+        this.checkUserInfoAndRedirect();
       })
-      // TODO Add toaster
-      .catch(error => console.log(error, 'Incorrect code entered!'));
-
-    // Root to homepage if success
-  }
-
-  verify_phone_code_with_set_pseudo(windowRef, verificationCode, pseudo) {
-    this.verify_phone_code(windowRef, verificationCode).then(() => {
-      console.log('Update profile');
-      this.firebaseAuth.auth.currentUser.updateProfile({
-        displayName: pseudo,
-        photoURL: null
-      }).then(() => {
-        console.log('Display name set in angular :P');
-      }).catch((error) => {
-        console.log('Error display name not set');
+      .catch(async error => {
+        (await this.toastCtrl.create({
+          message: 'Welcome',
+          color: 'danger',
+          duration: 1500
+        })).present();
       });
-    });
   }
 
   logout() {
     this.firebaseAuth
       .auth
       .signOut();
+    this.router.navigate(['/']);
   }
 
-  // updateDisplayName()
-
+  checkUserInfoAndRedirect() {
+    this.afStore.collection(environment.endpoints.users).doc(this.user.uid).get().toPromise().then((userData) => {
+      if (userData.exists) {
+        this.router.navigate(['/']);
+      } else {
+        this.router.navigate(['/user/edit']);
+      }
+    });
+  }
 }

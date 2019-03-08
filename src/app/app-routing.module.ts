@@ -25,7 +25,13 @@ const routes: Routes = [
     path: 'room/:id',
     loadChildren: './room/room.module#RoomPageModule',
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'user/edit',
+    loadChildren: './user/edit/edit.module#EditPageModule',
+    canActivate: [AuthGuard]
   }
+
 ];
 
 @NgModule({

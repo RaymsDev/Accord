@@ -54,9 +54,7 @@ export class LoginPage implements OnInit {
   }
 
   verifyLoginCode() {
-    // this.authService.verify_phone_code(this.windowRef, this.verificationCode);
-
-    this.authService.verify_phone_code_with_set_pseudo(this.windowRef, this.verificationCode, this.signup.pseudo);
+    this.authService.verify_phone_code(this.windowRef, this.verificationCode);
   }
 
   logoutplz() {
