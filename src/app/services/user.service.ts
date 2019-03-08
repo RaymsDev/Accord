@@ -9,16 +9,19 @@ import { AuthService } from './auth.service';
 import { isBuffer } from 'util';
 import { InnerSubscriber } from 'rxjs/internal/InnerSubscriber';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-
   private userCollection: AngularFirestoreCollection<IUser>;
 
-  constructor(private authService: AuthService, private afStore: AngularFirestore) {
-    this.userCollection = this.afStore.collection<IUser>(environment.endpoints.users);
+  constructor(
+    private authService: AuthService,
+    private afStore: AngularFirestore
+  ) {
+    this.userCollection = this.afStore.collection<IUser>(
+      environment.endpoints.users
+    );
   }
 
   public CurrentUser$(): Observable<IUser> {
@@ -28,42 +31,41 @@ export class UserService {
   }
 
   public User$(userId): Observable<IUser> {
-    return this.afStore.collection<IUser>(environment.endpoints.users)
+    return this.afStore
+      .collection<IUser>(environment.endpoints.users)
       .doc<IUser>(userId)
       .snapshotChanges()
-      .pipe(map(a => {
-        const data = a.payload.data() as IUser;
-        const id = a.payload.id;
-        return { id, ...data };
-      }));
+      .pipe(
+        map(a => {
+          const data = a.payload.data() as IUser;
+          const id = a.payload.id;
+          return { id, ...data };
+        })
+      );
   }
 
   public UserByUid$(uid: string): Observable<IUser> {
-    return this.afStore.collection<IUser>(environment.endpoints.users,
-      ref => ref.where('uid', '==', uid))
+    return this.afStore
+      .collection<IUser>(environment.endpoints.users, ref =>
+        ref.where('uid', '==', uid)
+      )
       .snapshotChanges()
-      .pipe(map(actions => actions.map(a => {
-        const data = a.payload.doc.data() as IUser;
-        const id = a.payload.doc.id;
-        return { id, ...data };
-      })))
+      .pipe(
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as IUser;
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
+      )
       .pipe(map(users => users[0]));
   }
 
   public UserCollectionExist(): Promise<Boolean> {
-    /*const p = new Promise<Boolean>((resolve => {
-      this.afStore.collection(environment.endpoints.users).doc(this.authService.currentUser.uid).get().toPromise().then((doc) => {
-        if (doc.exists) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      });
-    }));
-
-    return p;*/
-
-    return this.afStore.collection(environment.endpoints.users).doc(this.authService.currentUserId)
+    return this.afStore
+      .collection(environment.endpoints.users)
+      .doc(this.authService.currentUserId)
       .get()
       .pipe(map(user => user.exists))
       .toPromise<boolean>();
@@ -74,26 +76,35 @@ export class UserService {
       nickname: null,
       pictureUrl: null,
       email: null,
-      createdAt: Date.now.toString(),
+      createdAt: Date.now().toString(),
       uid: this.authService.currentUserId
     };
     return user;
   }
 
-  public GetUserCurrentUser(): Observable<IUser> {
-    return this.afStore.collection(environment.endpoints.users).doc(this.authService.user.uid).get()
+  public GetCurrentUser(): Observable<IUser> {
+    return this.afStore
+      .collection(environment.endpoints.users)
+      .doc(this.authService.user.uid)
+      .get()
       .pipe(map(doc => doc.data() as IUser));
   }
 
   public AddUser(user: IUser) {
-    this.afStore.collection(environment.endpoints.users).doc(user.uid).set({
-      ...user
-    });
+    this.afStore
+      .collection(environment.endpoints.users)
+      .doc(user.uid)
+      .set({
+        ...user
+      });
   }
 
   public UpdateUser(user: IUser) {
-    this.afStore.collection(environment.endpoints.users).doc(user.uid).update({
-      ...user
-    });
+    this.afStore
+      .collection(environment.endpoints.users)
+      .doc(user.uid)
+      .update({
+        ...user
+      });
   }
 }

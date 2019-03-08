@@ -22,7 +22,7 @@ const pages = [
 })
 export class AppComponent {
   public appPages = pages;
-  private user = null;
+  public User = null;
 
   constructor(
     private platform: Platform,
@@ -34,7 +34,7 @@ export class AppComponent {
     private toaster: ToastController
   ) {
     this.initializeApp();
-    this.authService.userObservable.subscribe((user) => this.user = user);
+    this.authService.userObservable.subscribe(user => (this.User = user));
   }
 
   initializeApp() {

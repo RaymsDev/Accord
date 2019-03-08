@@ -9,15 +9,15 @@ import { EditRoomPage } from './edit-room/edit-room.page';
 
 const routes: Routes = [
   {
-    path: '/create',
+    path: '',
     component: EditRoomPage
   },
   {
-    path: '/edit/:id',
+    path: 'edit/:id',
     component: EditRoomPage
   },
   {
-    path: '/:id',
+    path: ':id',
     component: RoomPage
   }
 ];

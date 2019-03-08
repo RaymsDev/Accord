@@ -4,6 +4,14 @@ import { IRoom } from 'src/app/models/IRoom';
 import { RoomService } from 'src/app/services/room.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { UserService } from 'src/app/services/user.service';
+
+const initialRoom: IRoom = {
+  icon: 'chatboxes',
+  name: '',
+  messages: [],
+  ownerId: null
+};
 
 @Component({
   selector: 'app-edit-room',
@@ -12,12 +20,7 @@ import { Router } from '@angular/router';
 })
 export class EditRoomPage implements OnInit {
   public Form: FormGroup;
-  private room: IRoom = {
-    icon: 'chatboxes',
-    name: '',
-    messages: [],
-    ownerId: null
-  };
+  private room: IRoom = initialRoom;
   constructor(
     private roomService: RoomService,
     private authService: AuthService,
@@ -42,6 +45,7 @@ export class EditRoomPage implements OnInit {
     const newRoom = this.Form.value as IRoom;
     newRoom.ownerId = this.authService.currentUserId;
     const createdRoom = await this.roomService.CreateRoom(newRoom);
+    this.Form.setValue(initialRoom);
     this.router.navigate(['room', createdRoom.id]);
   }
 }
