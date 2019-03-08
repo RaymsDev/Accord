@@ -30,7 +30,8 @@ const routes: Routes = [
     path: 'user/edit',
     loadChildren: './user/edit/edit.module#EditPageModule',
     canActivate: [AuthGuard]
-  }
+  },  { path: 'friend', loadChildren: './friend/friend.module#FriendPageModule' }
+
 
 ];
 
