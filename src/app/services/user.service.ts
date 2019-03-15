@@ -4,10 +4,9 @@ import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/c
 import { IUser } from '../models/IUser';
 import { environment } from 'src/environments/environment.prod';
 import { map, take, switchMap, mergeMap, flatMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest, from } from 'rxjs';
 import { AuthService } from './auth.service';
-import { isBuffer } from 'util';
-import { InnerSubscriber } from 'rxjs/internal/InnerSubscriber';
+import { DocumentReference } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +25,7 @@ export class UserService {
 
   public get CurrentUser$(): Observable<IUser> {
     return this.authService.userObservable.pipe(
-      flatMap(user => this.UserByUid$(user.uid))
+      mergeMap(user => this.User$(user.uid))
     );
   }
 
@@ -44,24 +43,6 @@ export class UserService {
       );
   }
 
-  public UserByUid$(uid: string): Observable<IUser> {
-    return this.afStore
-      .collection<IUser>(environment.endpoints.users, ref =>
-        ref.where('uid', '==', uid)
-      )
-      .snapshotChanges()
-      .pipe(
-        map(actions =>
-          actions.map(a => {
-            const data = a.payload.doc.data() as IUser;
-            const id = a.payload.doc.id;
-            return { id, ...data };
-          })
-        )
-      )
-      .pipe(map(users => users[0]));
-  }
-
   public UserCollectionExist(): Promise<Boolean> {
     return this.afStore
       .collection(environment.endpoints.users)
@@ -77,7 +58,9 @@ export class UserService {
       pictureUrl: null,
       email: null,
       createdAt: Date.now().toString(),
-      uid: this.authService.currentUserId
+      uid: this.authService.currentUserId,
+      friends: new Array<DocumentReference>(),
+      roomHasGuestList: new Array<DocumentReference>()
     };
     return user;
   }
@@ -106,5 +89,29 @@ export class UserService {
       .update({
         ...user
       });
+  }
+
+  public UpdateRoomHasMember(user: IUser, room: DocumentReference) {
+    user.roomHasGuestList = user.roomHasGuestList
+      ? [...user.roomHasGuestList, room]
+      : [room];
+    const promise = this.afStore
+      .collection(environment.endpoints.users)
+      .doc(user.id)
+      .update({
+        roomHasGuestList: user.roomHasGuestList
+      });
+
+    return from(promise);
+  }
+
+  public get GetCurrentFriends$(): Observable<IUser[]> {
+    return this.CurrentUser$.pipe(
+      switchMap(user => {
+        const userDocs = user.friends.map(f => this.User$(f.id));
+        const combined = combineLatest(userDocs);
+        return combined;
+      })
+    );
   }
 }
