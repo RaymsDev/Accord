@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { IUser } from 'src/app/models/IUser';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-edit',
@@ -11,7 +12,10 @@ export class EditPage implements OnInit {
   user: IUser;
   newUser: boolean;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.userService.UserCollectionExist().then(exist => {
@@ -25,9 +29,13 @@ export class EditPage implements OnInit {
     });
   }
 
-  updateInfo() {
+  OnClickUpdateInfo() {
     this.newUser
       ? this.userService.AddUser(this.user)
       : this.userService.UpdateUser(this.user);
+  }
+
+  OnClickLogout() {
+    this.authService.logout();
   }
 }

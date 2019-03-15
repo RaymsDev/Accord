@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore/firestore';
 import { environment } from 'src/environments/environment';
 import { IRoom } from '../models/IRoom';
-import { Observable, of, combineLatest } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of, combineLatest, from, observable } from 'rxjs';
+import { map, switchMap, mergeMap, combineAll } from 'rxjs/operators';
 import { firestore } from 'firebase';
 import { IMessage } from '../models/IMessage';
 import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/collection';
@@ -35,7 +35,7 @@ export class RoomService {
     );
   }
 
-  private getRoom(roomId): Observable<IRoom> {
+  private getRoom$(roomId): Observable<IRoom> {
     return this.roomCollection
       .doc<IRoom>(roomId)
       .snapshotChanges()
@@ -64,7 +64,7 @@ export class RoomService {
   JoinUser(roomId: string) {
     let room: IRoom;
     const joinKeys = {};
-    return this.getRoom(roomId).pipe(
+    return this.getRoom$(roomId).pipe(
       switchMap(r => {
         // Unique User IDs
         room = r;
@@ -117,11 +117,33 @@ export class RoomService {
     );
   }
 
+  get HasMember$(): Observable<IRoom[]> {
+    return this.userService.CurrentUser$.pipe(
+      switchMap(user => {
+        const roomDocs = user.roomHasGuestList.map(r => this.getRoom$(r.id));
+        const combined = combineLatest(roomDocs);
+        return combined;
+      })
+    );
+  }
+
   Remove(id: string) {
     this.roomCollection.doc(id).delete();
   }
 
-  CreateRoom(room: IRoom) {
-    return this.roomCollection.add(room);
+  CreateRoom(room: IRoom, invitedFriends: IUser[]) {
+    return from(this.roomCollection.add(room)).pipe(
+      switchMap(newRoom => {
+        return this.userService.CurrentUser$.pipe(
+          switchMap(user => {
+            invitedFriends.push(user);
+            return invitedFriends.map(u =>
+              this.userService.UpdateRoomHasMember(u, newRoom)
+            );
+          }),
+          map(() => newRoom)
+        );
+      })
+    );
   }
 }

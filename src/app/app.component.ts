@@ -52,7 +52,7 @@ export class AppComponent {
   }
 
   initRooms() {
-    this.roomService.Owned$.subscribe(rooms => {
+    this.roomService.HasMember$.subscribe(rooms => {
       this.appPages = [...pages];
       rooms
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -66,9 +66,6 @@ export class AppComponent {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
   private initNotifications() {
     if (this.platform.is('mobile')) {
       this.firebase.subscribe('all');

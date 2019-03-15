@@ -6,5 +6,4 @@ export interface IRoom {
   icon: string;
   messages: IMessage[];
   ownerId: string;
-  memberIdList: string[];
 }

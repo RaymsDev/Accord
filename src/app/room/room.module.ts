@@ -6,6 +6,7 @@ import { TimeStampToDatePipe } from '../pipes/time-stamp-to-date.pipe';
 import { IonicModule } from '@ionic/angular';
 import { RoomPage } from './room.page';
 import { EditRoomPage } from './edit-room/edit-room.page';
+import { UserItemComponent } from '../components/user-item/user-item.component';
 
 const routes: Routes = [
   {
@@ -30,6 +31,6 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [RoomPage, EditRoomPage, TimeStampToDatePipe]
+  declarations: [RoomPage, EditRoomPage, TimeStampToDatePipe, UserItemComponent]
 })
 export class RoomPageModule {}
