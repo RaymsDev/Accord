@@ -19,9 +19,11 @@
         </ion-list>
       </ion-content>
       <ion-footer *ngIf="user" class="menu-footer">
-        <ion-button class="menu-logout-btn" [routerLink]="[ '/user/edit' ]">Edit Profile</ion-button>
+        <!-- <ion-button class="menu-logout-btn" [routerLink]="[ '/user/edit' ]">Edit Profile</ion-button> -->
+        <ion-button class="menu-logout-btn" [routerLink]="[ '/friend' ]">Friend</ion-button>
         <ion-button class="menu-logout-btn" color="danger" (click)="logout()">Logout</ion-button>
       </ion-footer>
+
     </ion-menu>
     <ion-router-outlet main></ion-router-outlet>
   </ion-split-pane>

@@ -21,11 +21,11 @@ export class RoomPage implements OnInit {
     private route: ActivatedRoute,
     private roomService: RoomService,
     private userService: UserService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initRoom();
-    this.userService.CurrentUser$().subscribe(authUser => {
+    this.userService.CurrentUser$.subscribe(authUser => {
       this.CurrentUser = authUser;
     });
   }

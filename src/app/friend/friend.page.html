@@ -1,9 +1,42 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>friend</ion-title>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="room-title" slot="primary">
+      Friends
+    </ion-title>
+    <ion-icon name="people" size="large" slot="end"></ion-icon>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
+  You are in friends part and is crazy
+  <!-- <p *ngFor="let friend of friends">{{ friend.nickname }}</p> -->
+  <!-- <p>{{userTest.nickname}}</p> -->
+  <p *ngFor="let friend of friends_possible_by_phone_number">{{ friend.nickname }}</p>
+
+  <!-- <p *ngFor="let contact of allContacts">
+    Contact : {{ contact.displayName }} <ion-icon name="call" size="large" slot="end"></ion-icon>
+    :
+    <span *ngFor="let number of contact.phoneNumbers"> {{ number.value }}</span>
+  </p> -->
+  <!-- <p>Number send :</p>
+  <p *ngFor="let number of phonesNum"> {{number}}</p> -->
+
+  <!-- <p>Match with firebase:</p>
+  <p *ngFor="let user of allContactOnFirebase"> PhoneUserMatch {{ user.nickname}}</p> -->
+
+  <ion-item>
+    <ion-label>Search Someone</ion-label>
+    <ion-input type="text" aria-placeholder="Nickname" [(ngModel)]="searchNickname"></ion-input>
+    <ion-button (click)="searchSomeoneClick()">Search</ion-button>
+  </ion-item>
+
+  <ion-item>
+    <ion-button (click)="fireArrayPhoneSearch()">Search phones list</ion-button>
+  </ion-item>
+
+  <div *ngFor="let pfriend of friends_possibles_nickname">Possible friend: {{ pfriend.uid}}</div>
 
 </ion-content>

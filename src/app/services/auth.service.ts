@@ -35,7 +35,7 @@ export class AuthService {
     return this.userObservable;
   }
 
-  get currentUser(): any {
+  get currentUser(): IUser | any {
     return this.authenticated ? this.user : null;
   }
 
@@ -52,7 +52,7 @@ export class AuthService {
     return from(this.firebaseAuth.auth.signInWithPhoneNumber(num, appVerifier));
   }
 
-  async verify_phone_code(windowsRef, verificationCode) {
+  async verify_phone_code(windowsRef, verificationCode, num) {
     await windowsRef.confirmationResult
       .confirm(verificationCode)
       .then(async result => {
@@ -61,7 +61,7 @@ export class AuthService {
           color: 'success',
           duration: 1500
         })).present();
-        this.checkUserInfoAndRedirect();
+        this.checkUserInfoAndRedirect(num);
       })
       .catch(async error => {
         (await this.toastCtrl.create({
@@ -79,12 +79,12 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  checkUserInfoAndRedirect() {
+  checkUserInfoAndRedirect(num: string) {
     this.afStore.collection(environment.endpoints.users).doc(this.user.uid).get().toPromise().then((userData) => {
       if (userData.exists) {
         this.router.navigate(['/']);
       } else {
-        this.router.navigate(['/user/edit']);
+        this.router.navigate(['/user/edit/' + num]);
       }
     });
   }
