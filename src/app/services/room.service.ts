@@ -124,7 +124,7 @@ export class RoomService {
       switchMap(user => {
         return this.afStore
           .collection<IRoom>(environment.endpoints.rooms, ref =>
-            ref.where('roomIdHasGuestList', 'array-contains', user.id)
+            ref.where('memberIdList', 'array-contains', user.id)
           )
           .snapshotChanges()
           .pipe(

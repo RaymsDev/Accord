@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { RoomPage } from './room.page';
 import { EditRoomPage } from './edit-room/edit-room.page';
 import { UserItemComponent } from '../components/user-item/user-item.component';
+import { MarkdownToHtmlPipe } from '../pipes/markdown-to-html.pipe';
 
 const routes: Routes = [
   {
@@ -31,6 +32,12 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [RoomPage, EditRoomPage, TimeStampToDatePipe, UserItemComponent]
+  declarations: [
+    RoomPage,
+    EditRoomPage,
+    TimeStampToDatePipe,
+    UserItemComponent,
+    MarkdownToHtmlPipe
+  ]
 })
 export class RoomPageModule {}
