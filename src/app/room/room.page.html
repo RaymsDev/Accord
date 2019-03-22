@@ -37,7 +37,10 @@
             <div class="send-at">{{ message.createdAt | timeStampToDate }}</div>
           </div>
 
-          <p class="message-content">{{ message.content }}</p>
+          <p
+            class="message-content"
+            [innerHTML]="message.content | markdownToHtml"
+          ></p>
         </div>
       </div>
     </div>
