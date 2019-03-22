@@ -27,10 +27,15 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'user/edit',
+    path: 'user/edit/:phoneNumber',
     loadChildren: './user/edit/edit.module#EditPageModule',
     canActivate: [AuthGuard]
-  },  { path: 'friend', loadChildren: './friend/friend.module#FriendPageModule' }
+  },
+  {
+    path: 'friend',
+    loadChildren: './friend/friend.module#FriendPageModule',
+    canActivate: [AuthGuard]
+  }
 
 
 ];
