@@ -59,6 +59,13 @@ export class RoomPage implements OnInit {
       header: 'Room Actions',
       buttons: [
         {
+          text: 'Edit',
+          icon: 'create',
+          handler: () => {
+            this.router.navigate(['room', 'edit', this.roomId]);
+          }
+        },
+        {
           text: 'Delete',
           role: 'destructive',
           icon: 'trash',

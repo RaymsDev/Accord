@@ -1,5 +1,6 @@
 export enum endpoints {
-    rooms = 'rooms',
-    chars = 'chats',
-    users = 'users'
+  rooms = 'rooms',
+  chats = 'chats',
+  users = 'users',
+  login = 'login'
 }

@@ -11,19 +11,23 @@ import { environment } from 'src/environments/environment.prod';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   user: firebase.User;
   userObservable: Observable<firebase.User>;
   authObservable: Observable<firebase.auth.Auth>;
 
-  constructor(private firebaseAuth: AngularFireAuth, private toastCtrl: ToastController,
-    private router: Router, private afStore: AngularFirestore) {
-    this.firebaseAuth.authState.subscribe((auth) => this.user = auth);
+  constructor(
+    private firebaseAuth: AngularFireAuth,
+    private toastCtrl: ToastController,
+    private router: Router,
+    private afStore: AngularFirestore
+  ) {
+    this.firebaseAuth.authState.subscribe(auth => {
+      this.user = auth;
+    });
     this.userObservable = firebaseAuth.authState;
   }
 
@@ -73,19 +77,22 @@ export class AuthService {
   }
 
   logout() {
-    this.firebaseAuth
-      .auth
-      .signOut();
+    this.firebaseAuth.auth.signOut();
     this.router.navigate(['/']);
   }
 
   checkUserInfoAndRedirect() {
-    this.afStore.collection(environment.endpoints.users).doc(this.user.uid).get().toPromise().then((userData) => {
-      if (userData.exists) {
-        this.router.navigate(['/']);
-      } else {
-        this.router.navigate(['/user/edit']);
-      }
-    });
+    this.afStore
+      .collection(environment.endpoints.users)
+      .doc(this.user.uid)
+      .get()
+      .toPromise()
+      .then(userData => {
+        if (userData.exists) {
+          this.router.navigate(['/']);
+        } else {
+          this.router.navigate(['/user/edit']);
+        }
+      });
   }
 }

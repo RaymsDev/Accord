@@ -10,16 +10,18 @@ import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/c
 import { UserService } from './user.service';
 import { IUser } from '../models/IUser';
 import { AuthService } from './auth.service';
+import { endpoints } from 'src/environments/endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomService {
-  private roomCollection: AngularFirestoreCollection<IRoom>;
+  private roomCollection: AngularFirestoreCollection<Partial<IRoom>>;
   public Rooms$: Observable<IRoom[]>;
   constructor(
     private afStore: AngularFirestore,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {
     this.roomCollection = this.afStore.collection<IRoom>(
       environment.endpoints.rooms
@@ -35,7 +37,7 @@ export class RoomService {
     );
   }
 
-  private getRoom$(roomId): Observable<IRoom> {
+  public GetRoom$(roomId): Observable<IRoom> {
     return this.roomCollection
       .doc<IRoom>(roomId)
       .snapshotChanges()
@@ -64,7 +66,7 @@ export class RoomService {
   JoinUser(roomId: string) {
     let room: IRoom;
     const joinKeys = {};
-    return this.getRoom$(roomId).pipe(
+    return this.GetRoom$(roomId).pipe(
       switchMap(r => {
         // Unique User IDs
         room = r;
@@ -120,9 +122,20 @@ export class RoomService {
   get HasMember$(): Observable<IRoom[]> {
     return this.userService.CurrentUser$.pipe(
       switchMap(user => {
-        const roomDocs = user.roomHasGuestList.map(r => this.getRoom$(r.id));
-        const combined = combineLatest(roomDocs);
-        return combined;
+        return this.afStore
+          .collection<IRoom>(environment.endpoints.rooms, ref =>
+            ref.where('roomIdHasGuestList', 'array-contains', user.id)
+          )
+          .snapshotChanges()
+          .pipe(
+            map(actions =>
+              actions.map(a => {
+                const data = a.payload.doc.data() as IRoom;
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              })
+            )
+          );
       })
     );
   }
@@ -131,19 +144,10 @@ export class RoomService {
     this.roomCollection.doc(id).delete();
   }
 
-  CreateRoom(room: IRoom, invitedFriends: IUser[]) {
-    return from(this.roomCollection.add(room)).pipe(
-      switchMap(newRoom => {
-        return this.userService.CurrentUser$.pipe(
-          switchMap(user => {
-            invitedFriends.push(user);
-            return invitedFriends.map(u =>
-              this.userService.UpdateRoomHasMember(u, newRoom)
-            );
-          }),
-          map(() => newRoom)
-        );
-      })
-    );
+  EditRoom(roomId: string, room: Partial<IRoom>) {
+    return from(this.roomCollection.doc(roomId).update(room));
+  }
+  CreateRoom(room: IRoom) {
+    return from(this.roomCollection.add(room));
   }
 }

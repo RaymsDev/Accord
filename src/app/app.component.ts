@@ -32,7 +32,6 @@ export class AppComponent {
     private statusBar: StatusBar,
     private roomService: RoomService,
     private userService: UserService,
-    private authService: AuthService,
     private firebase: Firebase,
     private toaster: ToastController
   ) {
