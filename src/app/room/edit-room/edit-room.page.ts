@@ -3,19 +3,21 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { IRoom } from 'src/app/models/IRoom';
 import { RoomService } from 'src/app/services/room.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
 import { IUser } from 'src/app/models/IUser';
 import { ISelectable } from 'src/app/models/ISelectable';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, concatMap } from 'rxjs/operators';
 import { Selectable } from 'src/app/models/Selectable';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, Subscription } from 'rxjs';
+import { ToastController } from '@ionic/angular';
 
 const initialRoom: IRoom = {
   icon: 'chatboxes',
   name: '',
   messages: [],
-  ownerId: null
+  ownerId: null,
+  memberIdList: []
 };
 
 @Component({
@@ -25,36 +27,86 @@ const initialRoom: IRoom = {
 })
 export class EditRoomPage implements OnInit {
   public Form: FormGroup;
+  private roomId: string;
   private room: IRoom = initialRoom;
-
-  public SelectableFriends: ISelectable<IUser>[];
+  public IsEditMode = false;
+  public SelectableUserList: ISelectable<IUser>[];
   constructor(
     private roomService: RoomService,
     private authService: AuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
-    this.initFriends();
+    this.roomId = this.route.snapshot.paramMap.get('id');
     this.initForm();
+    this.IsEditMode = this.roomId ? true : false;
+    if (this.IsEditMode) {
+      this.roomService.GetRoom$(this.roomId).subscribe(room => {
+        this.room = room;
+        this.Form.patchValue({
+          name: room.name
+        });
+        this.initSelectableUserList(room);
+      });
+    } else {
+      this.initSelectableUserList();
+    }
   }
 
-  private initFriends() {
-    this.userService.GetCurrentFriends$.pipe(
-      map(friends => {
-        return friends.map(
-          f =>
-            new Selectable({
-              Item: f
-            })
+  public initSelectableUserList(room: IRoom = null) {
+    this.getUserSelectable()
+      .pipe(
+        map(users => {
+          return users.map(
+            u =>
+              new Selectable({
+                Item: u,
+                IsSelected: room
+                  ? room.memberIdList.some(id => id === u.id)
+                  : false
+              })
+          );
+        })
+      )
+      .subscribe(selectableUserList => {
+        this.SelectableUserList = selectableUserList;
+      });
+  }
+
+  private getUserSelectable(): Observable<IUser[]> {
+    if (this.IsEditMode) {
+      return this.userService
+        .GetUsers(this.room.memberIdList)
+        .pipe(
+          concatMap(
+            () => this.userService.GetCurrentFriends$,
+            (members, friends) => [...members, ...friends]
+          )
+        )
+        .pipe(
+          map(users => {
+            return this.removeDuplicates(users);
+          })
+        )
+        .pipe(
+          map(users => {
+            // We don't want current user our list
+            return users.filter(u => u.id !== this.authService.user.uid);
+          })
         );
-      })
-    ).subscribe(selectableFriends => {
-      this.SelectableFriends = selectableFriends;
+    }
+    return this.userService.GetCurrentFriends$;
+  }
+
+  private removeDuplicates(myArr: IUser[]) {
+    return myArr.filter((obj, pos, arr) => {
+      return arr.map(mapObj => mapObj.id).indexOf(obj.id) === pos;
     });
   }
-
   private initForm() {
     const formObj = {};
 
@@ -66,17 +118,48 @@ export class EditRoomPage implements OnInit {
   }
 
   public OnSubmit() {
+    if (this.IsEditMode) {
+      this.editRoom();
+      return;
+    }
+
+    this.createRoom();
+  }
+  private editRoom() {
+    this.roomService
+      .EditRoom(this.room.id, {
+        name: this.Form.value.name,
+        memberIdList: this.createMemberIdList()
+      })
+      .subscribe(() => {
+        this.presentToast();
+      });
+  }
+
+  private async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'Room Updated !',
+      duration: 2000
+    });
+    toast.present();
+  }
+
+  private createMemberIdList() {
+    const memberIdList = this.SelectableUserList.filter(
+      sf => sf.IsSelected
+    ).map(sf => sf.Item.id);
+    memberIdList.push(this.authService.currentUserId);
+    return memberIdList;
+  }
+
+  private createRoom() {
     const newRoom = this.Form.value as IRoom;
     newRoom.ownerId = this.authService.currentUserId;
-    const invitedFriends = this.SelectableFriends.filter(
-      sf => sf.IsSelected
-    ).map(sf => sf.Item);
-    const sub = this.roomService
-      .CreateRoom(newRoom, invitedFriends)
-      .subscribe(createdRoom => {
-        this.Form.setValue(initialRoom);
-        this.router.navigate(['room', createdRoom.id]);
-        sub.unsubscribe();
-      });
+    newRoom.memberIdList = this.createMemberIdList();
+    const sub = this.roomService.CreateRoom(newRoom).subscribe(createdRoom => {
+      this.Form.setValue(initialRoom);
+      this.router.navigate(['room', createdRoom.id]);
+      sub.unsubscribe();
+    });
   }
 }

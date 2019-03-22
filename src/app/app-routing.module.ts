@@ -10,7 +10,8 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: './home/home.module#HomePageModule'
+    loadChildren: './home/home.module#HomePageModule',
+    canActivate: [AuthGuard]
   },
   {
     path: 'list',
@@ -31,7 +32,6 @@ const routes: Routes = [
     loadChildren: './user/edit/edit.module#EditPageModule',
     canActivate: [AuthGuard]
   }
-
 ];
 
 @NgModule({

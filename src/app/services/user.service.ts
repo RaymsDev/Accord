@@ -4,15 +4,21 @@ import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/c
 import { IUser } from '../models/IUser';
 import { environment } from 'src/environments/environment.prod';
 import { map, take, switchMap, mergeMap, flatMap } from 'rxjs/operators';
-import { Observable, combineLatest, from } from 'rxjs';
+import { Observable, combineLatest, from, EMPTY } from 'rxjs';
 import { AuthService } from './auth.service';
 import { DocumentReference } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
+import { endpoints } from 'src/environments/endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private userCollection: AngularFirestoreCollection<IUser>;
+
+  public get UserCollection() {
+    return this.userCollection;
+  }
 
   constructor(
     private authService: AuthService,
@@ -25,7 +31,12 @@ export class UserService {
 
   public get CurrentUser$(): Observable<IUser> {
     return this.authService.userObservable.pipe(
-      mergeMap(user => this.User$(user.uid))
+      mergeMap(user => {
+        if (!user) {
+          return EMPTY;
+        }
+        return this.User$(user.uid);
+      })
     );
   }
 
@@ -59,8 +70,7 @@ export class UserService {
       email: null,
       createdAt: Date.now().toString(),
       uid: this.authService.currentUserId,
-      friends: new Array<DocumentReference>(),
-      roomHasGuestList: new Array<DocumentReference>()
+      friends: new Array<DocumentReference>()
     };
     return user;
   }
@@ -91,26 +101,16 @@ export class UserService {
       });
   }
 
-  public UpdateRoomHasMember(user: IUser, room: DocumentReference) {
-    user.roomHasGuestList = user.roomHasGuestList
-      ? [...user.roomHasGuestList, room]
-      : [room];
-    const promise = this.afStore
-      .collection(environment.endpoints.users)
-      .doc(user.id)
-      .update({
-        roomHasGuestList: user.roomHasGuestList
-      });
-
-    return from(promise);
+  public GetUsers(userIdList: string[]): Observable<IUser[]> {
+    const userDocs = userIdList.map(id => this.User$(id));
+    const combined = combineLatest(userDocs);
+    return combined;
   }
 
   public get GetCurrentFriends$(): Observable<IUser[]> {
     return this.CurrentUser$.pipe(
       switchMap(user => {
-        const userDocs = user.friends.map(f => this.User$(f.id));
-        const combined = combineLatest(userDocs);
-        return combined;
+        return this.GetUsers(user.friends.map(f => f.id));
       })
     );
   }
