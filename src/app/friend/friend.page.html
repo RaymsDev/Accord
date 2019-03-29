@@ -11,32 +11,53 @@
 </ion-header>
 
 <ion-content padding>
-  You are in friends part and is crazy
-  <!-- <p *ngFor="let friend of friends">{{ friend.nickname }}</p> -->
-  <!-- <p>{{userTest.nickname}}</p> -->
-  <p *ngFor="let friend of friends_possible_by_phone_number">{{ friend.nickname }}</p>
 
-  <!-- <p *ngFor="let contact of allContacts">
-    Contact : {{ contact.displayName }} <ion-icon name="call" size="large" slot="end"></ion-icon>
-    :
-    <span *ngFor="let number of contact.phoneNumbers"> {{ number.value }}</span>
-  </p> -->
-  <!-- <p>Number send :</p>
-  <p *ngFor="let number of phonesNum"> {{number}}</p> -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Your friends</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div *ngIf="myFriends.length">
+        <div *ngFor="let friend of myFriends">
+          {{friend.nickname}}
+        </div>
+      </div>
+      <div *ngIf="!myFriends.length">
+        You don't have friend yet ;)
+      </div>
+    </ion-card-content>
+  </ion-card>
 
-  <!-- <p>Match with firebase:</p>
-  <p *ngFor="let user of allContactOnFirebase"> PhoneUserMatch {{ user.nickname}}</p> -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Add Friends</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>
+          Search by:
+        </ion-label>
+        <ion-select [(ngModel)]="selectedSearch">
+          <ion-select-option *ngFor=" let search of searchBy">{{search}}</ion-select-option>
+        </ion-select>
+        <ion-input type="text" placeholder="{{selectedSearch}}" [(ngModel)]="searchString"></ion-input>
+      </ion-item>
+      <ion-button class="search-friend-button" (click)="searchSomeoneClick()">
+        <ion-icon name="search"></ion-icon> Search
+      </ion-button>
 
-  <ion-item>
-    <ion-label>Search Someone</ion-label>
-    <ion-input type="text" aria-placeholder="Nickname" [(ngModel)]="searchNickname"></ion-input>
-    <ion-button (click)="searchSomeoneClick()">Search</ion-button>
+      <p *ngIf="noFriendFound">We don't found the guy you search</p>
+      <ion-item *ngFor="let friend of possible_friend_to_add">{{ friend.nickname }} <ion-button
+          (click)="addToMyFriend(friend.uid)">Add</ion-button>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-item *ngIf="platform.is('mobile')">
+    <ion-button (click)="onClickSuggestFriend()">Suggest me friend</ion-button>
+    <ion-progress-bar type="indeterminate"></ion-progress-bar>
+    <p *ngFor="let pfriend of suggested_friend">Possible friend: {{ pfriend.nickname}} <ion-button>Add</ion-button>
+    </p>
   </ion-item>
-
-  <ion-item>
-    <ion-button (click)="fireArrayPhoneSearch()">Search phones list</ion-button>
-  </ion-item>
-
-  <div *ngFor="let pfriend of friends_possibles_nickname">Possible friend: {{ pfriend.uid}}</div>
 
 </ion-content>
