@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IRoom } from '../models/IRoom';
 import { RoomService } from '../services/room.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { IMessage } from '../models/IMessage';
 import { UserService } from '../services/user.service';
 import { IUser } from '../models/IUser';
+import { PopoverController, ActionSheetController } from '@ionic/angular';
 
 @Component({
   selector: 'app-room',
@@ -17,10 +18,13 @@ export class RoomPage implements OnInit {
   public CurrentUser: IUser;
   public Room$: Observable<IRoom>;
   public newMessage: string;
+  private roomId: string;
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private roomService: RoomService,
-    private userService: UserService
+    private userService: UserService,
+    private actionSheetController: ActionSheetController
   ) { }
 
   ngOnInit() {
@@ -31,12 +35,14 @@ export class RoomPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.content.scrollToBottom(300);
+    if (this.content) {
+      this.content.scrollToBottom(300);
+    }
   }
 
   private initRoom() {
-    const roomId = this.route.snapshot.paramMap.get('id');
-    this.Room$ = this.roomService.JoinUser(roomId);
+    this.roomId = this.route.snapshot.paramMap.get('id');
+    this.Room$ = this.roomService.JoinUser(this.roomId);
   }
 
   public SendMessage(roomId: string) {
@@ -44,7 +50,40 @@ export class RoomPage implements OnInit {
     this.newMessage = '';
   }
 
-  public trackByCreated(i, message: IMessage) {
+  public TrackByCreatedAt(i, message: IMessage) {
     return message.createdAt;
+  }
+
+  public async OnMoreButtonClick() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Room Actions',
+      buttons: [
+        {
+          text: 'Edit',
+          icon: 'create',
+          handler: () => {
+            this.router.navigate(['room', 'edit', this.roomId]);
+          }
+        },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          icon: 'trash',
+          handler: async () => {
+            await this.roomService.Remove(this.roomId);
+            this.router.navigate(['/']);
+          }
+        },
+        {
+          text: 'Cancel',
+          icon: 'close',
+          role: 'cancel',
+          handler: () => {
+            actionSheet.dismiss();
+          }
+        }
+      ]
+    });
+    await actionSheet.present();
   }
 }

@@ -4,10 +4,14 @@
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title class="room-title" slot="primary">
+      <ion-title class="room-title">
         {{ room.name }}
       </ion-title>
-      <ion-icon name="{{ room.icon }}" size="large" slot="end"></ion-icon>
+      <ion-buttons slot="end">
+        <ion-button (click)="OnMoreButtonClick()">
+          <ion-icon slot="icon-only" name="more"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
@@ -16,7 +20,7 @@
       <div
         class="message-container"
         [ngClass]="{ 'current-user': CurrentUser?.id == message.userId }"
-        *ngFor="let message of room.messages; trackBy: trackByCreated"
+        *ngFor="let message of room.messages; trackBy: TrackByCreatedAt"
       >
         <img
           *ngIf="!message.user?.pictureUrl; else hasPicture"
@@ -30,10 +34,13 @@
         <div class="message">
           <div class="message-details">
             <div class="name">{{ message.user?.nickname }}</div>
-            <div class="send-at">{{ message.createdAt }}</div>
+            <div class="send-at">{{ message.createdAt | timeStampToDate }}</div>
           </div>
 
-          <p class="message-content">{{ message.content }}</p>
+          <p
+            class="message-content"
+            [innerHTML]="message.content | markdownToHtml"
+          ></p>
         </div>
       </div>
     </div>

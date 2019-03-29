@@ -5,7 +5,7 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "npx ionic serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -20,7 +20,7 @@
     "zip-align": "zipalign -v 4 accord-release-unsigned.apk accord.apk",
     "docker-build": "docker build --rm -f \"dockerfile\" -t accord:latest .",
     "docker-run": "docker run --name ionic-apk-builder accord",
-    "docker-cp": "docker cp accord.apk ionic-apk-builder:/usr/app/accord.apk",
+    "docker-cp": "docker cp ionic-apk-builder:/usr/app/accord.apk accord.apk",
     "docker-apk": "npm run docker-build && npm run docker-cp && npm run docker-apk"
   },
   "private": true,
@@ -40,6 +40,7 @@
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.0.0",
+    "@types/showdown": "^1.9.2",
     "cordova-android": "7.1.4",
     "cordova-plugin-advanced-http": "^2.0.6",
     "cordova-plugin-appcenter-analytics": "^0.3.3",
@@ -57,6 +58,7 @@
     "core-js": "^2.5.4",
     "firebase": "^5.8.1",
     "rxjs": "~6.3.3",
+    "showdown": "^1.9.0",
     "zone.js": "~0.8.29"
   },
   "devDependencies": {

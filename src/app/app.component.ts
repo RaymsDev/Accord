@@ -6,6 +6,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { RoomService } from './services/room.service';
 import { Firebase } from '@ionic-native/firebase/ngx';
+import { User } from 'firebase';
+import { UserService } from './services/user.service';
 
 const pages = [
   {
@@ -22,19 +24,21 @@ const pages = [
 })
 export class AppComponent {
   public appPages = pages;
-  private user = null;
+  public User = null;
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private roomService: RoomService,
-    private authService: AuthService,
+    private userService: UserService,
     private firebase: Firebase,
     private toaster: ToastController
   ) {
     this.initializeApp();
-    this.authService.userObservable.subscribe((user) => this.user = user);
+    this.userService.CurrentUser$.subscribe(user => {
+      this.User = user;
+    });
   }
 
   initializeApp() {
@@ -47,8 +51,8 @@ export class AppComponent {
   }
 
   initRooms() {
-    this.roomService.Rooms$.subscribe(rooms => {
-      this.appPages = pages;
+    this.roomService.HasMember$.subscribe(rooms => {
+      this.appPages = [...pages];
       rooms
         .sort((a, b) => a.name.localeCompare(b.name))
         .forEach(r => {
@@ -61,26 +65,21 @@ export class AppComponent {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
   private initNotifications() {
     if (this.platform.is('mobile')) {
       this.firebase.subscribe('all');
 
-      this.firebase.onNotificationOpen()
-        .subscribe(async response => {
-          if (response.tap) {
+      this.firebase.onNotificationOpen().subscribe(async response => {
+        if (response.tap) {
+        } else {
+          const toast = await this.toaster.create({
+            message: response.body,
+            duration: 3000
+          });
 
-          } else {
-            const toast = await this.toaster.create({
-              message: response.body,
-              duration: 3000
-            });
-
-            toast.present();
-          }
-        });
+          toast.present();
+        }
+      });
     }
   }
 }

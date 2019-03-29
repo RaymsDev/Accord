@@ -46,4 +46,4 @@ import { PhoneInputComponent } from './user/phone-input/phone-input.component';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

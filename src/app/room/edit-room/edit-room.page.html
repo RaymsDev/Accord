@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title *ngIf="IsEditMode; else isNewRoomTitle">
+      Edit Room
+    </ion-title>
+    <ng-template #isNewRoomTitle>
+      <ion-title>
+        New Room
+      </ion-title>
+    </ng-template>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding color="dark">
+  <form [formGroup]="Form">
+    <ion-item color="primary">
+      <ion-label position="stacked">Name :</ion-label>
+      <ion-input type="text" formControlName="name" required></ion-input>
+    </ion-item>
+    <ion-item color="primary">
+      <ion-label position="stacked">Select Room Members:</ion-label>
+      <ion-list class="friends-list background-primary">
+        <ng-container *ngFor="let selectableUser of SelectableUserList">
+          <app-user-item [SelectableUser]="selectableUser"></app-user-item>
+        </ng-container>
+      </ion-list>
+    </ion-item>
+  </form>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button
+      color="secondary"
+      (click)="OnSubmit()"
+      [disabled]="!Form.valid"
+    >
+      <ion-icon *ngIf="IsEditMode; else isNewRoomMode" name="create"></ion-icon>
+      <ng-template #isNewRoomMode>
+        <ion-icon name="add"></ion-icon>
+      </ng-template>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

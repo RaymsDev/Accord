@@ -10,21 +10,32 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="user" padding>
-  <ion-item>
-    <ion-label>Email: </ion-label>
-    <ion-input [(ngModel)]="user.email"></ion-input>
-  </ion-item>
+<ion-content *ngIf="user" padding color="dark">
+  <ion-list class="background-tertiary">
+    <ion-item color="tertiary">
+      <ion-label position="stacked">Email : </ion-label>
+      <ion-input [(ngModel)]="user.email"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label>Nickname: </ion-label>
-    <ion-input [(ngModel)]="user.nickname"></ion-input>
-  </ion-item>
+    <ion-item color="tertiary">
+      <ion-label position="stacked">Nickname : </ion-label>
+      <ion-input [(ngModel)]="user.nickname"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label>Picture Url: </ion-label>
-    <ion-input type="file" [(ngModel)]="user.pictureUrl"></ion-input>
-  </ion-item>
+    <ion-item color="tertiary">
+      <ion-label position="stacked">Picture url :</ion-label>
+      <ion-input [(ngModel)]="user.pictureUrl"></ion-input>
+    </ion-item>
+  </ion-list>
 
-  <ion-button color="success" (click)="updateInfo()">Set</ion-button>
+  <ion-button expand="full" color="danger" (click)="OnClickLogout()">
+    <ion-icon slot="start" name="close"></ion-icon>
+    Logout
+  </ion-button>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="secondary" (click)="OnClickUpdateInfo()">
+      <ion-icon name="create"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

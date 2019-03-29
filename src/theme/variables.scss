@@ -68,3 +68,11 @@ $secondary: #e8bd12;
 $tertiary: #2c2a4a;
 $medium: #989aa2;
 $light: #f4f5f8;
+
+.background-primary {
+  background-color: $primary;
+}
+
+.background-tertiary {
+  background-color: $tertiary;
+}

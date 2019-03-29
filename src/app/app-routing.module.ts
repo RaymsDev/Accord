@@ -10,7 +10,8 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: './home/home.module#HomePageModule'
+    loadChildren: './home/home.module#HomePageModule',
+    canActivate: [AuthGuard]
   },
   {
     path: 'list',
@@ -22,7 +23,7 @@ const routes: Routes = [
     loadChildren: './user/login/login.module#LoginPageModule'
   },
   {
-    path: 'room/:id',
+    path: 'room',
     loadChildren: './room/room.module#RoomPageModule',
     canActivate: [AuthGuard]
   },
@@ -32,12 +33,15 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'user/edit',
+    loadChildren: './user/edit/edit.module#EditPageModule',
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'friend',
     loadChildren: './friend/friend.module#FriendPageModule',
     canActivate: [AuthGuard]
   }
-
-
 ];
 
 @NgModule({

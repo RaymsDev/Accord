@@ -10,20 +10,32 @@
         <ion-list class="side-menu">
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
             <ion-item [routerLink]="[p.url]" color="tertiary">
-              <ion-icon slot="start" [name]="p.icon"></ion-icon>
+              <ion-icon slot="start" [name]="p.icon || 'chatboxes'"></ion-icon>
               <ion-label>
                 {{ p.title }}
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item [routerLink]="'/room'" color="secondary">
+              <ion-icon slot="start" name="add"></ion-icon>
+              <ion-label>
+                Create Room
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ng-container *ngIf="User">
+            <ion-menu-toggle auto-hide="false">
+              <ion-item [routerLink]="'/user/edit'" color="primary">
+                <ion-icon slot="start" name="contact"></ion-icon>
+                <ion-label>
+                  User Settings
+                </ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ng-container>
         </ion-list>
       </ion-content>
-      <ion-footer *ngIf="user" class="menu-footer">
-        <!-- <ion-button class="menu-logout-btn" [routerLink]="[ '/user/edit' ]">Edit Profile</ion-button> -->
-        <ion-button class="menu-logout-btn" [routerLink]="[ '/friend' ]">Friend</ion-button>
-        <ion-button class="menu-logout-btn" color="danger" (click)="logout()">Logout</ion-button>
-      </ion-footer>
-
     </ion-menu>
     <ion-router-outlet main></ion-router-outlet>
   </ion-split-pane>
