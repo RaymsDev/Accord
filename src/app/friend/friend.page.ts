@@ -12,24 +12,33 @@ import { Contacts, Contact, ContactField, ContactName } from '@ionic-native/cont
 })
 export class FriendPage implements OnInit {
 
-  searchNickname: string;
-  userTest: IUser;
-  friends: IUser[];
-  friendToAdd: IUser[];
+  // Variables
+  myFriends: IUser[] = [];
+
+  selectedSearch = 'Nickname';
+  searchBy = ['Nickname', 'Phone Number'];
+  searchString: string;
+
+
+  possible_friend_to_add: IUser[];
+
+  displayLoader = false;
+  suggest_friend_btn = true;
+  suggested_friend: any;
   allContacts: Contact[];
-  allContactOnFirebase: IUser[];
-  friends_possibles_nickname: IUser[];
-  friends_possible_by_phone_number: any;
+
   phonesNum: string[];
 
+  noFriendFound = false;
+  noSuggestFriend = false;
+
+  // working variables
+
   constructor(private friendsService: FriendsService, private platform: Platform, private contactsPhone: Contacts) {
-    if (platform.is('mobile')) {
-      this.getAccessToAllContact().then(() => this.fireArrayPhoneSearch(this.allContacts));
-    }
   }
 
   ngOnInit() {
-    // this.friendsService.searchFriendByNickName('Ray').subscribe((users) => this.friends_possibles_nickname = users);
+    this.friendsService.getMyFriend().subscribe(friends => this.myFriends = friends);
   }
 
   getAccessToAllContact() {
@@ -37,12 +46,8 @@ export class FriendPage implements OnInit {
       .then(data => {
         this.allContacts = data;
         this.phonesNum = data.map(contact => this.formatPhoneNumber(contact.phoneNumbers.shift().value));
-        // this.friendsService.getContactByPhoneNumber(this.phonesNum).subscribe(users => this.allContactOnFirebase = users);
+        this.phonesNum = this.phonesNum.filter(el => el != null);
       });
-  }
-
-  searchSomeoneClick() {
-    this.friendsService.searchFriendByNickName(this.searchNickname).subscribe((users) => this.friends_possibles_nickname = users);
   }
 
   formatPhoneNumber(phoneNumber: string): string {
@@ -57,21 +62,52 @@ export class FriendPage implements OnInit {
       console.log('Unexpected phone number:' + phoneNumber);
       return null;
     }
+  }
 
+  onClickSuggestFriend() {
+    if (this.platform.is('mobile')) {
+      this.displayLoader = true;
+      this.getAccessToAllContact().then(() => {
+        this.fireArrayPhoneSearch(this.phonesNum);
+      });
+    }
   }
 
   fireArrayPhoneSearch(phoneArray = []) {
-    const phonearray = ['+33682447643', '+33682747643', '+33682447943', '+33682576069'];
-    this.friends_possible_by_phone_number = [];
-    this.friendsService.getContactByPhoneNumber(phonearray).subscribe((users) => {
+    this.suggested_friend = [];
+    this.friendsService.getContactByPhoneNumber(phoneArray).subscribe((users) => {
       users.subscribe(
         x => {
           if (x) {
-            this.friends_possible_by_phone_number.push(x);
+            this.suggested_friend.push(x);
           }
         }
       );
     });
+    this.displayLoader = false;
+  }
+
+  searchSomeoneClick() {
+    if (this.searchString) {
+      this.noFriendFound = false;
+      if (this.selectedSearch === 'Nickname') {
+        this.friendsService.searchFriendByNickName(this.searchString)
+          .subscribe((user) => {
+            if (user.length) {
+              this.possible_friend_to_add = user;
+            } else {
+              this.noFriendFound = true;
+            }
+          });
+      } else {
+        const phoneToSearch = this.formatPhoneNumber(this.searchString);
+        this.friendsService.getContactToOnePhoneNumber(phoneToSearch);
+      }
+    }
+  }
+
+  addToMyFriend(friendUid) {
+    this.friendsService.addToMyFriendByUid(friendUid);
   }
 
 }

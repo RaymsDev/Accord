@@ -18,38 +18,13 @@ export class FriendsService {
   constructor(private plt: Platform, private authService: AuthService, private afStore: AngularFirestore,
     private userService: UserService) { }
 
-  // public getMyFriend(): any {
-
-  //   let friends;
-  //   this.userService.GetCurrentIUser().toPromise().then((userInfo) => {
-  //     friends = userInfo.friends.map((friend) => {
-  //       // this.afStore.collection(environment.endpoints.users).doc<IUser>(friend.id).get()
-  //       //   .toPromise().then((user) => {
-  //       //     user.data();
-  //       //   });
-  //       this.afStore.doc<IUser>(friend).get().toPromise()
-  //         .then((user) => {
-  //           return user.data();
-  //         });
-  //     });
-  //   });
-
-  // this.userService.GetCurrentIUser().toPromise().then((user) => {
-  //   return zip(user.friends.map((friend) => {
-  //     this.afStore.doc<IUser>(friend).get();
-  //   }));
-  // });
-
-  // this.afStore.collection(environment.endpoints.users).doc(this.authService.currentUserId).get()
-  //   .pipe(map(user => user.exists))
-
-  // }
+  public getMyFriend(): Observable<IUser[]> {
+    return this.userService.GetCurrentFriends$;
+  }
 
   public searchFriendByNickName(nickname: string): Observable<IUser[]> {
     return this.userService.getOtherUserByNickName(nickname);
   }
-
-  public getUserListByNickName() { }
 
   public getContactByPhoneNumber(phonesNumber: string[]) {
     return of(phonesNumber).pipe(
@@ -67,6 +42,12 @@ export class FriendsService {
       ref.where('phone', '==', phoneNumber)).valueChanges()
       .pipe(map(user => user[0]));
   }
+
+  public addToMyFriendByUid(friendUid) {
+    this.userService.addFriend(friendUid);
+  }
+
+
 
 
 }

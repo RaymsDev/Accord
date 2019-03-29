@@ -3,9 +3,10 @@ import { AngularFirestore } from '@angular/fire/firestore/firestore';
 import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/collection';
 import { IUser } from '../models/IUser';
 import { environment } from 'src/environments/environment.prod';
-import { map, switchMap, flatMap } from 'rxjs/operators';
+import { map, switchMap, flatMap, tap } from 'rxjs/operators';
 import { Observable, combineLatest } from 'rxjs';
 import { AuthService } from './auth.service';
+import { DocumentReference } from '@angular/fire/firestore';
 
 
 @Injectable({
@@ -111,7 +112,22 @@ export class UserService {
     // this.afStore.
   }
 
-  public addFriend(uid: string) { }
+  public addFriend(uid: string) {
+    this.CurrentUser$.pipe(
+      tap((user: IUser) => {
+        this.afStore.collection(environment.endpoints.users).doc(uid)
+          .get().pipe(
+            tap((friend) => {
+              user.friends.push(friend.ref);
+              this.UpdateUser(user);
+            })).subscribe();
+      })
+    ).subscribe();
+
+    // .then(() => {
+    //   this.UpdateUser(me);
+    // });
+  }
 
   public deleteFriend(uid: string) { }
 
