@@ -9,11 +9,14 @@ import { ISelectable } from 'src/app/models/ISelectable';
 })
 export class UserItemComponent implements OnInit {
   @Input() SelectableUser: ISelectable<IUser>;
-  constructor() {}
+  @Input() canSelect?: boolean;
+  constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   public OnClickToggle() {
-    this.SelectableUser.IsSelected = !this.SelectableUser.IsSelected;
+    if (this.canSelect) {
+      this.SelectableUser.IsSelected = !this.SelectableUser.IsSelected;
+    }
   }
 }

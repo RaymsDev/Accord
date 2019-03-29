@@ -18,9 +18,16 @@
     </ion-card-header>
     <ion-card-content>
       <div *ngIf="myFriends.length">
-        <div *ngFor="let friend of myFriends">
-          {{friend.nickname}}
-        </div>
+        <ion-item color='primary' *ngFor="let friend of myFriends">
+          <ion-avatar slot="start">
+            <img *ngIf="!friend.pictureUrl; else hasPicture"
+              [src]="'https://api.adorable.io/avatars/285/' + friend.email" />
+            <ng-template #hasPicture>
+              <img [src]="friend.pictureUrl" />
+            </ng-template>
+          </ion-avatar>
+          <ion-label>{{ friend.nickname }}</ion-label>
+        </ion-item>
       </div>
       <div *ngIf="!myFriends.length">
         You don't have friend yet ;)
@@ -46,17 +53,13 @@
         <ion-icon name="search"></ion-icon> Search
       </ion-button>
 
-      <p *ngIf="noFriendFound">We don't found the guy you search</p>
-      <!-- <ion-item *ngFor="let friend of possible_friend_to_add" color="tertiary">
-        <app-user-item [SelectableUser]="selectableUser"></app-user-item>
-        {{ friend.nickname }} <ion-button (click)="addToMyFriend(friend.uid)">Add</ion-button>
-      </ion-item> -->
+      <p *ngIf="noFriendFound">We don't found the guy you search, or he is early in your friend</p>
       <ion-list class="friends-list background-primary" *ngIf="display_possible_friend_list">
         <ng-container *ngFor="let friend of possible_friend_selectable">
-          <app-user-item [SelectableUser]="friend"></app-user-item>
+          <app-user-item [SelectableUser]="friend" [canSelect]="true"></app-user-item>
         </ng-container>
       </ion-list>
-      <ion-button color="tertiary" (click)="addToMyFriend()">Add</ion-button>
+      <ion-button color="tertiary" *ngIf="display_possible_friend_list" (click)="addToMyFriend()">Add</ion-button>
     </ion-card-content>
   </ion-card>
 
