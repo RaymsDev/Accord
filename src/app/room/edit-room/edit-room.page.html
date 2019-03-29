@@ -24,18 +24,14 @@
       <ion-label position="stacked">Select Room Members:</ion-label>
       <ion-list class="friends-list background-primary">
         <ng-container *ngFor="let selectableUser of SelectableUserList">
-          <app-user-item [SelectableUser]="selectableUser"></app-user-item>
+          <app-user-item [SelectableUser]="selectableUser" [canSelect]="true"></app-user-item>
         </ng-container>
       </ion-list>
     </ion-item>
   </form>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button
-      color="secondary"
-      (click)="OnSubmit()"
-      [disabled]="!Form.valid"
-    >
+    <ion-fab-button color="secondary" (click)="OnSubmit()" [disabled]="!Form.valid">
       <ion-icon *ngIf="IsEditMode; else isNewRoomMode" name="create"></ion-icon>
       <ng-template #isNewRoomMode>
         <ion-icon name="add"></ion-icon>

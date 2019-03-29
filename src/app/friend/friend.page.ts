@@ -91,13 +91,22 @@ export class FriendPage implements OnInit {
     this.displayLoader = false;
   }
 
+  searchUserIsEarlyAFreind(user: IUser): boolean {
+    for (let index = 0; index < this.myFriends.length; index++) {
+      if (this.myFriends[index].uid === user.uid) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   searchSomeoneClick() {
     if (this.searchString) {
       this.noFriendFound = false;
       if (this.selectedSearch === 'Nickname') {
         this.friendsService.searchFriendByNickName(this.searchString)
           .subscribe((user) => {
-            if (user.length) {
+            if (user.length && this.searchUserIsEarlyAFreind(user[0])) {
               this.possible_friend_to_add = user;
               this.possible_friend_selectable = [new Selectable({
                 Item: user[0],
@@ -112,7 +121,7 @@ export class FriendPage implements OnInit {
       } else {
         const phoneToSearch = this.formatPhoneNumber(this.searchString);
         this.friendsService.getContactToOnePhoneNumber(phoneToSearch).subscribe((user) => {
-          if ([user].length) {
+          if ([user].length && this.searchUserIsEarlyAFreind(user)) {
             this.possible_friend_to_add = [user];
             this.possible_friend_selectable = [new Selectable({
               Item: user,
