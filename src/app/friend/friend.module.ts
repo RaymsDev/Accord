@@ -9,6 +9,7 @@ import { IonicModule } from '@ionic/angular';
 import { FriendPage } from './friend.page';
 
 import { HttpClientModule } from '@angular/common/http';
+import { UserItemComponent } from '../components/user-item/user-item.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,9 @@ const routes: Routes = [
     HttpClientModule
   ],
   providers: [],
-  declarations: [FriendPage]
+  declarations: [
+    FriendPage,
+    UserItemComponent
+  ]
 })
 export class FriendPageModule { }

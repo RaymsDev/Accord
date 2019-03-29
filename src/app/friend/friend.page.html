@@ -10,11 +10,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding color="dark">
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Your friends</ion-card-title>
+      <ion-card-title color="light">Your friends</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <div *ngIf="myFriends.length">
@@ -30,10 +30,10 @@
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Add Friends</ion-card-title>
+      <ion-card-title color="light">Add Friends</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-item>
+      <ion-item color="tertiary">
         <ion-label>
           Search by:
         </ion-label>
@@ -47,9 +47,16 @@
       </ion-button>
 
       <p *ngIf="noFriendFound">We don't found the guy you search</p>
-      <ion-item *ngFor="let friend of possible_friend_to_add">{{ friend.nickname }} <ion-button
-          (click)="addToMyFriend(friend.uid)">Add</ion-button>
-      </ion-item>
+      <!-- <ion-item *ngFor="let friend of possible_friend_to_add" color="tertiary">
+        <app-user-item [SelectableUser]="selectableUser"></app-user-item>
+        {{ friend.nickname }} <ion-button (click)="addToMyFriend(friend.uid)">Add</ion-button>
+      </ion-item> -->
+      <ion-list class="friends-list background-primary" *ngIf="display_possible_friend_list">
+        <ng-container *ngFor="let friend of possible_friend_selectable">
+          <app-user-item [SelectableUser]="friend"></app-user-item>
+        </ng-container>
+      </ion-list>
+      <ion-button color="tertiary" (click)="addToMyFriend()">Add</ion-button>
     </ion-card-content>
   </ion-card>
 
