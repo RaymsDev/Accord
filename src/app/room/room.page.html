@@ -1,11 +1,11 @@
-<ng-container *ngIf="(Room$ | async) as room">
+<ng-container *ngIf="(Room$ | async) as Room">
   <ion-header>
     <ion-toolbar color="primary">
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
       <ion-title class="room-title">
-        {{ room.name }}
+        {{ Room.name }}
       </ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="OnMoreButtonClick()">
@@ -17,46 +17,32 @@
 
   <ion-content #content padding color="dark">
     <div class="chat">
-      <div
-        class="message-container"
-        [ngClass]="{ 'current-user': CurrentUser?.id == message.userId }"
-        *ngFor="let message of room.messages; trackBy: TrackByCreatedAt"
-      >
-        <img
-          *ngIf="!message.user?.pictureUrl; else hasPicture"
-          class="avatar"
-          [src]="'https://api.adorable.io/avatars/285/' + message.user?.email"
-        />
-        <ng-template #hasPicture>
-          <img class="avatar" [src]="message.user?.pictureUrl" />
-        </ng-template>
-
-        <div class="message">
-          <div class="message-details">
-            <div class="name">{{ message.user?.nickname }}</div>
-            <div class="send-at">{{ message.createdAt | timeStampToDate }}</div>
-          </div>
-
-          <p
-            class="message-content"
-            [innerHTML]="message.content | markdownToHtml"
-          ></p>
-        </div>
-      </div>
+      <app-message
+        *ngFor="
+          let message of Room.messages;
+          let isLast = last;
+          trackBy: TrackByCreatedAt
+        "
+        [Message]="message"
+        [CurrentUser]="CurrentUser"
+        [isLast]="isLast"
+        (lastRendered)="ScrollToBottom()"
+      ></app-message>
     </div>
   </ion-content>
   <ion-footer>
     <footer class="form">
-      <ion-input
+      <ion-textarea
         class="message-input"
+        placeholder="Enter your message here..."
         [(ngModel)]="newMessage"
-        (keydown.enter)="SendMessage(room.id)"
-      ></ion-input>
+        (keydown.enter)="SendMessage(Room.id)"
+      ></ion-textarea>
 
       <ion-button
         class="send-button"
         color="secondary"
-        (click)="SendMessage(room.id)"
+        (click)="SendMessage(Room.id)"
       >
         <ion-icon name="send"></ion-icon>
       </ion-button>
