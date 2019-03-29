@@ -8,7 +8,7 @@ import { RoomPage } from './room.page';
 import { EditRoomPage } from './edit-room/edit-room.page';
 import { UserItemComponent } from '../components/user-item/user-item.component';
 import { MarkdownToHtmlPipe } from '../pipes/markdown-to-html.pipe';
-
+import { MessageComponent } from '../components/message/message.component';
 const routes: Routes = [
   {
     path: '',
@@ -33,6 +33,7 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   declarations: [
+    MessageComponent,
     RoomPage,
     EditRoomPage,
     TimeStampToDatePipe,
