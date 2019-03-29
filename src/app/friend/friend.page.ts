@@ -4,6 +4,8 @@ import { IUser } from '../models/IUser';
 import { Platform } from '@ionic/angular';
 import { Http } from '@angular/http';
 import { Contacts, Contact, ContactField, ContactName } from '@ionic-native/contacts/ngx';
+import { ISelectable } from '../models/ISelectable';
+import { Selectable } from '../models/Selectable';
 
 @Component({
   selector: 'app-friend',
@@ -21,6 +23,8 @@ export class FriendPage implements OnInit {
 
 
   possible_friend_to_add: IUser[];
+  possible_friend_selectable: ISelectable<IUser>[];
+  display_possible_friend_list = false;
 
   displayLoader = false;
   suggest_friend_btn = true;
@@ -95,13 +99,31 @@ export class FriendPage implements OnInit {
           .subscribe((user) => {
             if (user.length) {
               this.possible_friend_to_add = user;
+              this.possible_friend_selectable = [new Selectable({
+                Item: user[0],
+                IsSelected: false
+              })];
+              this.display_possible_friend_list = true;
             } else {
+              this.display_possible_friend_list = false;
               this.noFriendFound = true;
             }
           });
       } else {
         const phoneToSearch = this.formatPhoneNumber(this.searchString);
-        this.friendsService.getContactToOnePhoneNumber(phoneToSearch);
+        this.friendsService.getContactToOnePhoneNumber(phoneToSearch).subscribe((user) => {
+          if ([user].length) {
+            this.possible_friend_to_add = [user];
+            this.possible_friend_selectable = [new Selectable({
+              Item: user,
+              IsSelected: false
+            })];
+            this.display_possible_friend_list = true;
+          } else {
+            this.display_possible_friend_list = false;
+            this.noFriendFound = true;
+          }
+        });
       }
     }
   }
