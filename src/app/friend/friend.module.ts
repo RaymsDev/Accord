@@ -30,8 +30,7 @@ const routes: Routes = [
   ],
   providers: [],
   declarations: [
-    FriendPage,
-    UserItemComponent
+    FriendPage
   ]
 })
 export class FriendPageModule { }
