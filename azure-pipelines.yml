@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- develop
 
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -33,17 +33,6 @@ steps:
     sourceFolder: $(Agent.TempDirectory)
     contents: '**' 
     targetFolder: $(Build.SourcesDirectory)
-    #cleanTargetFolder: false # Optional
-    overWrite: true # Optional
-    #flattenFolders: false # Optional
-
-# Copy Files
-# Copy files from source folder to target folder using match patterns (The match patterns will only match file paths, not folder paths)
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: $(Build.SourcesDirectory)
-    contents: '**/firebase.config.ts' 
-    targetFolder: $(Build.SourcesDirectory)/src/environments
     #cleanTargetFolder: false # Optional
     overWrite: true # Optional
     #flattenFolders: false # Optional
