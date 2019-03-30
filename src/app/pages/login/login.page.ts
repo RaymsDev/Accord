@@ -1,25 +1,66 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { auth } from 'firebase';
-import { Platform } from '@ionic/angular';
+import { Platform, AlertController, ToastController } from '@ionic/angular';
+import {
+  ValidatorFn,
+  AbstractControl,
+  FormGroup,
+  FormControl,
+  Validators
+} from '@angular/forms';
+import { AlertOptions } from '@ionic/core';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss']
 })
-export class LoginPage implements OnInit {
-  private isAndroid: boolean;
-  public Phone: string;
+export class LoginPage implements OnInit, AfterViewInit {
+  constructor(
+    private authService: AuthService,
+    private platform: Platform,
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) {}
+  public IsAndroid: boolean;
   public Verification: string;
-  public Captcha: any;
-  constructor(private authService: AuthService, private platform: Platform) {}
+  public Captcha: auth.RecaptchaVerifier;
+  public PhoneForm: FormGroup;
 
-  ngOnInit() {
-    this.isAndroid = this.platform.is('cordova') && this.platform.is('android');
-    if (!this.isAndroid) {
+  private alertOptions: AlertOptions = {
+    header: 'Phone Validation',
+    message: 'Type Verification Code Here',
+    translucent: true,
+    inputs: [
+      {
+        name: 'code',
+        type: 'number',
+        placeholder: 'Code'
+      }
+    ],
+    buttons: [
+      {
+        text: 'Cancel',
+        role: 'cancel',
+        cssClass: 'secondary'
+      }
+    ]
+  };
+  ngAfterViewInit(): void {
+    if (!this.IsAndroid) {
       this.initCaptcha();
     }
+  }
+
+  ngOnInit() {
+    this.IsAndroid = this.platform.is('cordova') && this.platform.is('android');
+    this.initForm();
+  }
+  private initForm() {
+    this.PhoneForm = new FormGroup({
+      phone: new FormControl('', [Validators.required, this.phoneValidator()])
+    });
   }
 
   private initCaptcha() {
@@ -27,20 +68,88 @@ export class LoginPage implements OnInit {
     this.Captcha.render();
   }
 
-  Send() {
-    if (this.isAndroid) {
-      this.authService
-        .VerifyPhone(this.Phone)
-        .then(verficationId => {
-          return this.authService.SignInWithVerificationId(verficationId);
-        })
-        .then(userInfo => {
-          const { uid } = userInfo;
-          return this.authService.CheckUserInfoAndRedirect(uid);
-        });
+  async VerifyPhone() {
+    if (this.IsAndroid) {
+      const verificationId = await this.authService.VerifyPhoneAndroid(
+        this.PhoneForm.get('phone').value
+      );
+      this.promptCodeAndroid(verificationId);
     } else {
+      const confirmationResult = await this.authService.VerifyPhone(
+        this.PhoneForm.get('phone').value,
+        this.Captcha
+      );
+      this.promptCodeWeb(confirmationResult);
     }
   }
 
-  VerifyCode() {}
+  private async promptCodeWeb(confirmationResult: auth.ConfirmationResult) {
+    const alertOptions = {
+      ...this.alertOptions
+    };
+    alertOptions.buttons.push({
+      text: 'Check',
+      cssClass: 'secondary',
+      handler: data => {
+        this.checkCodeWeb(data.code, confirmationResult);
+      }
+    });
+    const alert = await this.alertController.create(alertOptions);
+    await alert.present();
+  }
+  private async promptCodeAndroid(verificationId: string) {
+    const alertOptions = {
+      ...this.alertOptions
+    };
+    alertOptions.buttons.push({
+      text: 'Check',
+      cssClass: 'secondary',
+      handler: data => {
+        this.checkCodeAndroid(data.code, verificationId);
+      }
+    });
+    const alert = await this.alertController.create(alertOptions);
+    await alert.present();
+  }
+
+  checkCodeWeb(code: string, confirmationResult: auth.ConfirmationResult) {
+    confirmationResult
+      .confirm(code)
+      .then(result => {
+        if (result && result.user) {
+          this.authService.CheckUserInfoAndRedirect(result.user.uid);
+        }
+      })
+      .catch(error => {
+        this.showToastError();
+      });
+  }
+  checkCodeAndroid(code: string, verificationId: string) {
+    this.authService
+      .SignInWithVerificationIdAndroid(verificationId, code)
+      .then(result => {
+        if (result && result.user) {
+          this.authService.CheckUserInfoAndRedirect(result.user.uid);
+        }
+      })
+      .catch(error => this.showToastError());
+  }
+
+  private async showToastError() {
+    const toast = await this.toastController.create({
+      color: 'danger',
+      duration: 3000,
+      message: 'Incorrect code typed'
+    });
+
+    toast.present();
+  }
+
+  private phoneValidator() {
+    const validator: ValidatorFn = (phoneNumber: AbstractControl) => {
+      const phoneRegex = /^((\+)33)[1-9](\d{2}){4}$/g;
+      return phoneRegex.test(phoneNumber.value) ? null : { pattern: false };
+    };
+    return validator;
+  }
 }

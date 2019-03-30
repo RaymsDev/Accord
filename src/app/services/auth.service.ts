@@ -29,31 +29,34 @@ export class AuthService {
   get User(): Observable<firebase.User> {
     return this.userObservable;
   }
-  // Returns current user UID
   get currentUserId(): string {
     return this.authenticated ? this.user.uid : '';
   }
 
-  VerifyPhone(num) {
-    return this.firebaseAuth.VerifyPhoneAndroid(num);
+  VerifyPhoneAndroid(phone: string) {
+    return this.firebaseAuth.VerifyPhoneAndroid(phone);
   }
 
-  SignInWithVerificationId(verificationId: string) {
+  VerifyPhone(phone: string, recaptcha: any) {
+    return this.firebaseAuth.VerifyPhoneWeb(phone, recaptcha);
+  }
+
+  SignInWithVerificationIdAndroid(verificationId: string, code: any) {
     return this.firebaseAuth.SignInWithVerificationIdAndroid(
       verificationId,
-      '12345'
+      code
     );
   }
 
   Logout() {
     this.firebaseAuth.SignOut();
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 
   CheckUserInfoAndRedirect(userId) {
     this.afStore
       .collection(environment.endpoints.users)
-      .doc(userId)
+      .doc(this.user.uid)
       .get()
       .toPromise()
       .then(userData => {

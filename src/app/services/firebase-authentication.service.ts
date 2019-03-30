@@ -31,8 +31,6 @@ export class FirebaseAuthenticationService {
 
   private auth$: Observable<firebase.User>;
 
-  Ver;
-
   private async initAndroid() {
     await this.platform.ready();
     this.Auth$ = this.nativeAuth.onAuthStateChanged();
