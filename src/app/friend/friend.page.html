@@ -56,7 +56,7 @@
       <p *ngIf="noFriendFound">We don't found the guy you search, or he is early in your friend</p>
       <ion-list class="friends-list background-primary" *ngIf="display_possible_friend_list">
         <ng-container *ngFor="let friend of possible_friend_selectable">
-          <!-- <app-user-item [SelectableUser]="friend" [canSelect]="true"></app-user-item> -->
+          <app-user-item [SelectableUser]="friend" [canSelect]="true"></app-user-item>
         </ng-container>
       </ion-list>
       <ion-button color="tertiary" *ngIf="display_possible_friend_list" (click)="addToMyFriend()">Add</ion-button>
