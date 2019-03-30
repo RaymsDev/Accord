@@ -137,8 +137,15 @@ export class FriendPage implements OnInit {
     }
   }
 
-  addToMyFriend(friendUid) {
-    this.friendsService.addToMyFriendByUid(friendUid);
+  addToMyFriend() {
+    if (this.possible_friend_to_add.length) {
+      this.friendsService.addToMyFriendByUid(this.possible_friend_to_add[0]);
+      this.possible_friend_to_add = [];
+    }
+  }
+
+  addSuggestedFriend() {
+
   }
 
 }
