@@ -9,8 +9,8 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./edit.page.scss']
 })
 export class EditPage implements OnInit {
-  user: IUser;
-  newUser: boolean;
+  User: IUser;
+  IsNewUser: boolean;
 
   constructor(
     private userService: UserService,
@@ -20,19 +20,19 @@ export class EditPage implements OnInit {
   ngOnInit() {
     this.userService.UserCollectionExist().then(exist => {
       if (exist) {
-        this.userService.GetCurrentUser().subscribe(user => (this.user = user));
-        this.newUser = false;
+        this.userService.GetCurrentUser().subscribe(user => (this.User = user));
+        this.IsNewUser = false;
       } else {
-        this.newUser = true;
-        this.user = this.userService.getNewUserInit();
+        this.IsNewUser = true;
+        this.User = this.userService.getNewUserInit();
       }
     });
   }
 
   OnClickUpdateInfo() {
-    this.newUser
-      ? this.userService.AddUser(this.user)
-      : this.userService.UpdateUser(this.user);
+    this.IsNewUser
+      ? this.userService.AddUser(this.User)
+      : this.userService.UpdateUser(this.User);
   }
 
   OnClickLogout() {
