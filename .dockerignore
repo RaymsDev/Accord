@@ -8,4 +8,7 @@ www/
 
 .gitignore
 .dockerignore
+azure-pipelines.yml
 Dockerfile
+
+*.apk
