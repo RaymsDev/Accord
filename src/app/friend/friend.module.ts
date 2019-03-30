@@ -10,6 +10,7 @@ import { FriendPage } from './friend.page';
 
 import { HttpClientModule } from '@angular/common/http';
 import { UserItemComponent } from '../components/user-item/user-item.component';
+import { UserItemModule } from '../components/user-item/user-item.module';
 
 const routes: Routes = [
   {
@@ -24,7 +25,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    HttpClientModule
+    HttpClientModule,
+    UserItemModule
   ],
   providers: [],
   declarations: [

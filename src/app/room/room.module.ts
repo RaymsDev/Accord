@@ -8,6 +8,7 @@ import { RoomPage } from './room.page';
 import { EditRoomPage } from './edit-room/edit-room.page';
 import { UserItemComponent } from '../components/user-item/user-item.component';
 import { MarkdownToHtmlPipe } from '../pipes/markdown-to-html.pipe';
+import { UserItemModule } from '../components/user-item/user-item.module';
 
 const routes: Routes = [
   {
@@ -30,14 +31,14 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    UserItemModule
   ],
   declarations: [
     RoomPage,
     EditRoomPage,
     TimeStampToDatePipe,
-    UserItemComponent,
     MarkdownToHtmlPipe
   ]
 })
-export class RoomPageModule {}
+export class RoomPageModule { }
