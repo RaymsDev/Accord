@@ -19,10 +19,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'login',
-    loadChildren: './user/login/login.module#LoginPageModule'
-  },
-  {
     path: 'room',
     loadChildren: './room/room.module#RoomPageModule',
     canActivate: [AuthGuard]
@@ -31,7 +27,8 @@ const routes: Routes = [
     path: 'user/edit',
     loadChildren: './user/edit/edit.module#EditPageModule',
     canActivate: [AuthGuard]
-  }
+  },
+  { path: 'login', loadChildren: './pages/login/login.module#LoginPageModule' }
 ];
 
 @NgModule({

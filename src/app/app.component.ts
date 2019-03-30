@@ -36,16 +36,15 @@ export class AppComponent {
     private toaster: ToastController
   ) {
     this.initializeApp();
-    this.userService.CurrentUser$.subscribe(user => {
-      this.User = user;
-    });
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
+      this.userService.CurrentUser$.subscribe(user => {
+        this.User = user;
+      });
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.initNotifications();
       this.initRooms();
     });
   }
@@ -63,23 +62,5 @@ export class AppComponent {
           });
         });
     });
-  }
-
-  private initNotifications() {
-    if (this.platform.is('mobile')) {
-      this.firebase.subscribe('all');
-
-      this.firebase.onNotificationOpen().subscribe(async response => {
-        if (response.tap) {
-        } else {
-          const toast = await this.toaster.create({
-            message: response.body,
-            duration: 3000
-          });
-
-          toast.present();
-        }
-      });
-    }
   }
 }
