@@ -36,6 +36,6 @@ export class EditPage implements OnInit {
   }
 
   OnClickLogout() {
-    this.authService.logout();
+    this.authService.Logout();
   }
 }

@@ -10,7 +10,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding color="tertiary">
   <ion-card>
     <ion-card-header>
       <ion-card-subtitle>Connectez vous au plus vite</ion-card-subtitle>
@@ -20,15 +20,15 @@
     <ion-card-content>
       <!-- TEMP sign up component -->
       <ion-item>
-        <ion-label for="phone">Phone number :</ion-label>
+        <ion-label position="stacked" for="phone">Phone number :</ion-label>
         <!-- TODO put space between digits https://stackoverflow.com/questions/50619823/angular-5-add-space-after-every-4-digit-in-input -->
         <ion-input
           required
           type="tel"
           name="phone"
-          placeholder="33 6 35 67 98 77"
-          maxlength="11"
-          [(ngModel)]="phoneNumber.number"
+          placeholder="+33 6 35 67 98 77"
+          required
+          [(ngModel)]="Phone"
         >
         </ion-input>
         <ion-icon name="call" slot="end"></ion-icon>
@@ -38,40 +38,30 @@
         <div id="recaptcha-container"></div>
       </div>
       <div class="recaptcha-block">
-        <ion-button size="default" (click)="sendLoginCode()"
-          >Send Me a Code</ion-button
-        >
-      </div>
-    </ion-card-content>
-  </ion-card>
-  <ion-card *ngIf="windowRef.confirmationResult && !user">
-    <ion-card-content>
-      <div>
-        <hr />
-        <ion-item>
-          <ion-label for="code">Verification Code : </ion-label><br />
-          <ion-input
-            type="text"
-            name="code"
-            maxlength="6"
-            [(ngModel)]="verificationCode"
-          ></ion-input>
-          <ion-icon name="lock" slot="end"></ion-icon>
-        </ion-item>
-        <div class="recaptcha-block">
-          <ion-button size="default" (click)="verifyLoginCode()"
-            >Verify</ion-button
-          >
-        </div>
+        <ion-button size="default" (click)="Send()">Send Me a Code</ion-button>
       </div>
     </ion-card-content>
   </ion-card>
   <ion-card>
-    <ion-item *ngIf="user">
+    <ion-card-content>
       <div>
-        You have successfully logged in with your phone number!
+        <hr />
+        <ion-item>
+          <ion-label for="code" position="stacked"
+            >Verification Code : </ion-label
+          ><br />
+          <ion-input
+            type="text"
+            name="code"
+            maxlength="6"
+            [(ngModel)]="Verification"
+          ></ion-input>
+          <ion-icon name="lock" slot="end"></ion-icon>
+        </ion-item>
+        <div class="recaptcha-block">
+          <ion-button size="default" (click)="VerifyCode()">Verify</ion-button>
+        </div>
       </div>
-    </ion-item>
+    </ion-card-content>
   </ion-card>
-  <ion-button *ngIf="user" (click)="logout()" color="danger">Logout</ion-button>
 </ion-content>

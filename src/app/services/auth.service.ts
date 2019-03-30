@@ -1,34 +1,25 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth/auth';
 import { Observable, from } from 'rxjs';
-
-import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { async } from 'q';
-import { UserService } from './user.service';
-import { IUser } from '../models/IUser';
 import { environment } from 'src/environments/environment.prod';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { map } from 'rxjs/operators';
-
+import { FirebaseAuthenticationService } from './firebase-authentication.service';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   user: firebase.User;
   userObservable: Observable<firebase.User>;
-  authObservable: Observable<firebase.auth.Auth>;
 
   constructor(
-    private firebaseAuth: AngularFireAuth,
-    private toastCtrl: ToastController,
+    private firebaseAuth: FirebaseAuthenticationService,
     private router: Router,
     private afStore: AngularFirestore
   ) {
-    this.firebaseAuth.authState.subscribe(auth => {
-      this.user = auth;
+    this.firebaseAuth.Auth$.subscribe(user => {
+      this.user = user;
     });
-    this.userObservable = firebaseAuth.authState;
+    this.userObservable = this.firebaseAuth.Auth$;
   }
 
   get authenticated(): boolean {
@@ -38,53 +29,31 @@ export class AuthService {
   get User(): Observable<firebase.User> {
     return this.userObservable;
   }
-
-  get currentUser(): any {
-    return this.authenticated ? this.user : null;
-  }
-
-  get currentUserObservable(): any {
-    return this.firebaseAuth.authState;
-  }
-
   // Returns current user UID
   get currentUserId(): string {
     return this.authenticated ? this.user.uid : '';
   }
 
-  send_phone_code(num, appVerifier): Observable<any> {
-    return from(this.firebaseAuth.auth.signInWithPhoneNumber(num, appVerifier));
+  VerifyPhone(num) {
+    return this.firebaseAuth.VerifyPhoneAndroid(num);
   }
 
-  async verify_phone_code(windowsRef, verificationCode) {
-    await windowsRef.confirmationResult
-      .confirm(verificationCode)
-      .then(async result => {
-        (await this.toastCtrl.create({
-          message: 'Welcome',
-          color: 'success',
-          duration: 1500
-        })).present();
-        this.checkUserInfoAndRedirect();
-      })
-      .catch(async error => {
-        (await this.toastCtrl.create({
-          message: 'Welcome',
-          color: 'danger',
-          duration: 1500
-        })).present();
-      });
+  SignInWithVerificationId(verificationId: string) {
+    return this.firebaseAuth.SignInWithVerificationIdAndroid(
+      verificationId,
+      '12345'
+    );
   }
 
-  logout() {
-    this.firebaseAuth.auth.signOut();
+  Logout() {
+    this.firebaseAuth.SignOut();
     this.router.navigate(['/']);
   }
 
-  checkUserInfoAndRedirect() {
+  CheckUserInfoAndRedirect(userId) {
     this.afStore
       .collection(environment.endpoints.users)
-      .doc(this.user.uid)
+      .doc(userId)
       .get()
       .toPromise()
       .then(userData => {
