@@ -12,7 +12,7 @@
     "e2e": "ng e2e",
     "android": "npx ionic cordova run android -l",
     "dev": "npx ionic serve",
-    "platforms": "npx ionic cordova prepare",
+    "platforms": "npx ionic cordova platform add android --confim",
     "build-prod": "npx ionic cordova build android --prod --release",
     "clean": "npx rimraf ./www && npx rimraf ./platforms && npx rimraf ./plugins",
     "generate-key": "keytool -genkey -v -keystore accord-release-key.keystore -alias accord-r-k -keyalg RSA -keysize 2048 -validity 10000",
@@ -21,7 +21,7 @@
     "docker-build": "docker build --rm -f \"dockerfile\" -t accord:latest .",
     "docker-run": "docker run --name ionic-apk-builder accord",
     "docker-cp": "docker cp ionic-apk-builder:/usr/app/accord.apk accord.apk",
-    "docker-apk": "npm run docker-build && npm run docker-cp && npm run docker-apk"
+    "docker-apk": "npm run docker-build && npm run docker-cp"
   },
   "private": true,
   "dependencies": {

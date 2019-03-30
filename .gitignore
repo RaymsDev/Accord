@@ -38,3 +38,4 @@ UserInterfaceState.xcuserstate
 */**/*.config.ts
 *.keystore
 google-services.json
+*.apk
