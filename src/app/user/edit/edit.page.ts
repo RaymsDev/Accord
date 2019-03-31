@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { IUser } from 'src/app/models/IUser';
 import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit',
@@ -14,7 +15,8 @@ export class EditPage implements OnInit {
 
   constructor(
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -30,12 +32,18 @@ export class EditPage implements OnInit {
   }
 
   OnClickUpdateInfo() {
-    this.IsNewUser
-      ? this.userService.AddUser(this.User)
-      : this.userService.UpdateUser(this.User);
+    if (this.IsNewUser) {
+      this.userService.AddUser(this.User).then(() => {
+        this.router.navigate(['/']);
+      });
+    } else {
+      this.userService.UpdateUser(this.User);
+    }
   }
 
   OnClickLogout() {
-    this.authService.Logout();
+    this.authService.Logout().then(() => {
+      this.router.navigate(['/login']);
+    });
   }
 }

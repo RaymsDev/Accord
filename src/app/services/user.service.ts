@@ -84,7 +84,7 @@ export class UserService {
   }
 
   public AddUser(user: IUser) {
-    this.afStore
+    return this.afStore
       .collection(environment.endpoints.users)
       .doc(user.uid)
       .set({

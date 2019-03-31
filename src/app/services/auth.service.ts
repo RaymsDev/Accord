@@ -13,7 +13,6 @@ export class AuthService {
 
   constructor(
     private firebaseAuth: FirebaseAuthenticationService,
-    private router: Router,
     private afStore: AngularFirestore
   ) {
     this.firebaseAuth.Auth$.subscribe(user => {
@@ -49,22 +48,14 @@ export class AuthService {
   }
 
   Logout() {
-    this.firebaseAuth.SignOut();
-    this.router.navigate(['/login']);
+    return this.firebaseAuth.SignOut();
   }
 
   CheckUserInfoAndRedirect(userId) {
-    this.afStore
+    return this.afStore
       .collection(environment.endpoints.users)
       .doc(this.user.uid)
       .get()
-      .toPromise()
-      .then(userData => {
-        if (userData.exists) {
-          this.router.navigate(['/']);
-        } else {
-          this.router.navigate(['/user/edit']);
-        }
-      });
+      .toPromise();
   }
 }
