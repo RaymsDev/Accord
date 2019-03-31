@@ -24,7 +24,25 @@ export class LoginPage implements OnInit, AfterViewInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private router: Router
-  ) {}
+  ) {
+    this.platform.ready().then(() => {
+      if (this.authService.IsAuthenticated) {
+        this.router.navigate(['/']);
+      }
+
+      this.authService.User$.subscribe(user => {
+        if (user) {
+          this.authService.CheckUserInfoAndRedirect(user.uid).then(userData => {
+            if (userData.exists) {
+              this.navigateToHome();
+            } else {
+              this.router.navigate(['/user/edit']);
+            }
+          });
+        }
+      });
+    });
+  }
   public IsAndroid: boolean;
   public Verification: string;
   public Captcha: auth.RecaptchaVerifier;
@@ -119,14 +137,15 @@ export class LoginPage implements OnInit, AfterViewInit {
       .confirm(code)
       .then(result => {
         if (result && result.user) {
-          return this.authService.CheckUserInfoAndRedirect(result.user.uid);
-        }
-      })
-      .then(userData => {
-        if (userData.exists) {
-          this.router.navigate(['/']);
-        } else {
-          this.router.navigate(['/user/edit']);
+          this.authService
+            .CheckUserInfoAndRedirect(result.user.uid)
+            .then(userData => {
+              if (userData.exists) {
+                this.navigateToHome();
+              } else {
+                this.router.navigate(['/user/edit']);
+              }
+            });
         }
       })
       .catch(error => {
@@ -137,15 +156,16 @@ export class LoginPage implements OnInit, AfterViewInit {
     this.authService
       .SignInWithVerificationIdAndroid(verificationId, code)
       .then(result => {
-        if (result) {
-          return this.authService.CheckUserInfoAndRedirect(result.uid);
-        }
-      })
-      .then(userData => {
-        if (userData.exists) {
-          this.router.navigate(['/']);
-        } else {
-          this.router.navigate(['/user/edit']);
+        if (result && result.user) {
+          this.authService
+            .CheckUserInfoAndRedirect(result.user.uid)
+            .then(userData => {
+              if (userData.exists) {
+                this.navigateToHome();
+              } else {
+                this.router.navigate(['/user/edit']);
+              }
+            });
         }
       })
       .catch(error => this.showToastError());
@@ -159,6 +179,10 @@ export class LoginPage implements OnInit, AfterViewInit {
     });
 
     toast.present();
+  }
+
+  private navigateToHome() {
+    this.router.navigate(['/']);
   }
 
   private phoneValidator() {

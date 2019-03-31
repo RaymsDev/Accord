@@ -1,60 +1,58 @@
 import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
-import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment.prod';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FirebaseAuthenticationService } from './firebase-authentication.service';
+import { map } from 'rxjs/operators';
+import { LocalStorageService } from './local-storage.service';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  user: firebase.User;
-  userObservable: Observable<firebase.User>;
+  private user$: Observable<firebase.UserInfo>;
 
   constructor(
     private firebaseAuth: FirebaseAuthenticationService,
-    private afStore: AngularFirestore
+    private afStore: AngularFirestore,
+    private localStorage: LocalStorageService
   ) {
-    this.firebaseAuth.Auth$.subscribe(user => {
-      this.user = user;
-    });
-    this.userObservable = this.firebaseAuth.Auth$;
+    this.user$ = this.firebaseAuth.Auth$;
   }
 
-  get authenticated(): boolean {
-    return this.user !== null && this.user !== undefined;
+  public get IsAuthenticated(): boolean {
+    return !!this.localStorage.Uid;
   }
 
-  get User(): Observable<firebase.User> {
-    return this.userObservable;
+  public get User$() {
+    return this.user$;
   }
-  get currentUserId(): string {
-    return this.authenticated ? this.user.uid : '';
+  public get CurrentUserId(): string {
+    return this.localStorage.Uid;
   }
 
-  VerifyPhoneAndroid(phone: string) {
+  public VerifyPhoneAndroid(phone: string) {
     return this.firebaseAuth.VerifyPhoneAndroid(phone);
   }
 
-  VerifyPhone(phone: string, recaptcha: any) {
+  public VerifyPhone(phone: string, recaptcha: any) {
     return this.firebaseAuth.VerifyPhoneWeb(phone, recaptcha);
   }
 
-  SignInWithVerificationIdAndroid(verificationId: string, code: any) {
+  public SignInWithVerificationIdAndroid(verificationId: string, code: any) {
     return this.firebaseAuth.SignInWithVerificationIdAndroid(
       verificationId,
       code
     );
   }
 
-  Logout() {
+  public Logout() {
     return this.firebaseAuth.SignOut();
   }
 
-  CheckUserInfoAndRedirect(userId) {
+  public CheckUserInfoAndRedirect(userId) {
     return this.afStore
       .collection(environment.endpoints.users)
-      .doc(this.user.uid)
+      .doc(userId)
       .get()
       .toPromise();
   }

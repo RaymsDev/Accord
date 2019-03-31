@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
 import { IUser } from 'src/app/models/IUser';
 import { ISelectable } from 'src/app/models/ISelectable';
-import { map, concatMap } from 'rxjs/operators';
+import { map, concatMap, switchMap } from 'rxjs/operators';
 import { Selectable } from 'src/app/models/Selectable';
 import { Observable, forkJoin, Subscription } from 'rxjs';
 import { ToastController } from '@ionic/angular';
@@ -59,7 +59,7 @@ export class EditRoomPage implements OnInit {
   }
 
   public initSelectableUserList(room: IRoom = null) {
-    this.getUserSelectable()
+    this.getUserSelectable$()
       .pipe(
         map(users => {
           return users.map(
@@ -78,10 +78,10 @@ export class EditRoomPage implements OnInit {
       });
   }
 
-  private getUserSelectable(): Observable<IUser[]> {
+  private getUserSelectable$(): Observable<IUser[]> {
     if (this.IsEditMode) {
       return this.userService
-        .GetUsers(this.room.memberIdList)
+        .GetUsers$(this.room.memberIdList)
         .pipe(
           concatMap(
             () => this.userService.GetCurrentFriends$,
@@ -97,7 +97,7 @@ export class EditRoomPage implements OnInit {
           map(users => {
             // We don't want current user our list
             return users
-              ? users.filter(u => u.id !== this.authService.user.uid)
+              ? users.filter(u => u.id !== this.authService.CurrentUserId)
               : [];
           })
         );
@@ -120,19 +120,20 @@ export class EditRoomPage implements OnInit {
     this.Form = new FormGroup(formObj);
   }
 
-  public OnSubmit() {
+  public async OnSubmit() {
     if (this.IsEditMode) {
-      this.editRoom();
+      await this.editRoom();
       return;
     }
 
-    this.createRoom();
+    await this.createRoom();
   }
-  private editRoom() {
+  private async editRoom() {
+    const memberIdList = await this.createMemberIdList();
     this.roomService
       .EditRoom(this.room.id, {
         name: this.Form.value.name,
-        memberIdList: this.createMemberIdList()
+        memberIdList
       })
       .subscribe(() => {
         this.presentToast();
@@ -147,18 +148,18 @@ export class EditRoomPage implements OnInit {
     toast.present();
   }
 
-  private createMemberIdList() {
+  private async createMemberIdList() {
     const memberIdList = this.SelectableUserList.filter(
       sf => sf.IsSelected
     ).map(sf => sf.Item.id);
-    memberIdList.push(this.authService.currentUserId);
+    memberIdList.push(this.authService.CurrentUserId);
     return memberIdList;
   }
 
-  private createRoom() {
+  private async createRoom() {
     const newRoom = this.Form.value as IRoom;
-    newRoom.ownerId = this.authService.currentUserId;
-    newRoom.memberIdList = this.createMemberIdList();
+    newRoom.ownerId = this.authService.CurrentUserId;
+    newRoom.memberIdList = await this.createMemberIdList();
     const sub = this.roomService.CreateRoom(newRoom).subscribe(createdRoom => {
       this.Form.setValue(initialRoom);
       this.router.navigate(['room', createdRoom.id]);

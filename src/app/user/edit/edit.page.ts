@@ -3,6 +3,9 @@ import { UserService } from 'src/app/services/user.service';
 import { IUser } from 'src/app/models/IUser';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { ToastController, Platform } from '@ionic/angular';
+import { switchMap, mergeMap } from 'rxjs/operators';
+import { from, of } from 'rxjs';
 
 @Component({
   selector: 'app-edit',
@@ -16,32 +19,69 @@ export class EditPage implements OnInit {
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
-    this.userService.UserCollectionExist().then(exist => {
-      if (exist) {
-        this.userService.GetCurrentUser().subscribe(user => (this.User = user));
-        this.IsNewUser = false;
-      } else {
-        this.IsNewUser = true;
-        this.User = this.userService.getNewUserInit();
-      }
-    });
+    this.userService
+      .GetCurrentUser$()
+      .pipe(
+        switchMap(exist => {
+          if (exist) {
+            this.IsNewUser = false;
+            return this.userService.GetCurrentUser$();
+          }
+          this.IsNewUser = true;
+          return of(this.userService.NewUser);
+        })
+      )
+      .subscribe(
+        user => {
+          this.User = user;
+        },
+        error => {
+          console.error(error);
+        },
+        () => {
+          console.log('complete');
+        }
+      );
   }
 
-  OnClickUpdateInfo() {
-    if (this.IsNewUser) {
-      this.userService.AddUser(this.User).then(() => {
+  public async OnClickUpdateInfo() {
+    try {
+      if (this.IsNewUser) {
+        await this.userService.AddUser(this.User);
         this.router.navigate(['/']);
-      });
-    } else {
-      this.userService.UpdateUser(this.User);
+      } else {
+        await this.userService.UpdateUser(this.User);
+        this.showUpdateToast();
+      }
+    } catch (error) {
+      console.error(error);
+      this.showErrorToast();
     }
   }
 
-  OnClickLogout() {
+  private async showErrorToast() {
+    const toast = await this.toastController.create({
+      color: 'danger',
+      message: 'Error : Try later...',
+      duration: 3000
+    });
+    toast.present();
+  }
+  private async showUpdateToast() {
+    const toast = await this.toastController.create({
+      color: 'secondary',
+      message: 'Profile Updated',
+      duration: 3000
+    });
+    toast.present();
+  }
+
+  public OnClickLogout() {
     this.authService.Logout().then(() => {
       this.router.navigate(['/login']);
     });
