@@ -16,6 +16,7 @@ export class FriendPage implements OnInit {
 
   // Variables
   myFriends: IUser[] = [];
+  myFriendsUid = [];
 
   selectedSearch = 'Nickname';
   searchBy = ['Nickname', 'Phone Number'];
@@ -42,7 +43,12 @@ export class FriendPage implements OnInit {
   }
 
   ngOnInit() {
-    this.friendsService.getMyFriend().subscribe(friends => this.myFriends = friends);
+    this.friendsService.getMyFriend().subscribe(friends => {
+      this.myFriends = friends;
+      this.myFriends.forEach(element => {
+        this.myFriendsUid.push(element);
+      });
+    });
   }
 
   getAccessToAllContact() {
@@ -83,7 +89,9 @@ export class FriendPage implements OnInit {
       users.subscribe(
         x => {
           if (x) {
-            this.suggested_friend.push(x);
+            if (!this.myFriendsUid.includes(x.uid)) {
+              this.suggested_friend.push(x);
+            }
           }
         }
       );
@@ -144,8 +152,17 @@ export class FriendPage implements OnInit {
     }
   }
 
-  addSuggestedFriend() {
+  addSuggestedFriend(uid) {
+    this.friendsService.addToMyFriendByUid(uid);
+    this.removeOfSuggestedFriend(uid);
+  }
 
+  removeOfSuggestedFriend(uid) {
+    for (let index = 0; index < this.suggested_friend.length; index++) {
+      if (this.suggested_friend[index].uid === uid) {
+        this.suggested_friend.slice(index, 1);
+      }
+    }
   }
 
 }

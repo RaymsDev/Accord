@@ -66,7 +66,8 @@
   <ion-item *ngIf="platform.is('mobile')">
     <ion-button (click)="onClickSuggestFriend()">Suggest me friend</ion-button>
     <ion-progress-bar type="indeterminate"></ion-progress-bar>
-    <p *ngFor="let pfriend of suggested_friend">Possible friend: {{ pfriend.nickname}} <ion-button>Add</ion-button>
+    <p *ngFor="let pfriend of suggested_friend">Possible friend: {{ pfriend.nickname}} <ion-button
+        (click)="addSuggestedFriend(uid)">Add</ion-button>
     </p>
   </ion-item>
 
