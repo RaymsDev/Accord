@@ -12,7 +12,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { IMessage } from '../models/IMessage';
 import { UserService } from '../services/user.service';
 import { IUser } from '../models/IUser';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, Platform } from '@ionic/angular';
 import { tap } from 'rxjs/operators';
 
 @Component({
@@ -32,12 +32,15 @@ export class RoomPage implements OnInit {
     private router: Router,
     private roomService: RoomService,
     private userService: UserService,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private platform: Platform
   ) {}
 
   ngOnInit() {
-    this.initRoom();
-    this.initCurrentUser();
+    this.platform.ready().then(() => {
+      this.initRoom();
+      this.initCurrentUser();
+    });
   }
 
   ionViewDidEnter() {
@@ -45,7 +48,7 @@ export class RoomPage implements OnInit {
   }
 
   private initCurrentUser() {
-    this.userService.CurrentUser$.subscribe(authUser => {
+    this.userService.GetCurrentUser$().subscribe(authUser => {
       this.CurrentUser = authUser;
     });
   }

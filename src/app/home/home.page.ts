@@ -4,11 +4,13 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  styleUrls: ['home.page.scss']
 })
 export class HomePage {
-  user: firebase.User;
+  User: firebase.UserInfo;
   constructor(private authService: AuthService) {
-    authService.User.subscribe((user) => this.user = user);
+    this.authService.User$.subscribe(user => {
+      this.User = user;
+    });
   }
 }

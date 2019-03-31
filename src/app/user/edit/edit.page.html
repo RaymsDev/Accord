@@ -30,7 +30,7 @@
 
   <ion-button expand="full" color="primary" (click)="OnClickUpdateInfo()">
     <ion-icon slot="start" name="create"></ion-icon>
-    Update
+    {{ IsNewUser ? 'Create' : 'Edit' }}
   </ion-button>
   <ion-button expand="full" color="danger" (click)="OnClickLogout()">
     <ion-icon slot="start" name="close"></ion-icon>

@@ -24,11 +24,11 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | boolean {
-    if (this.authService.authenticated) {
+    if (this.authService.IsAuthenticated) {
       return true;
     }
 
-    return this.authService.userObservable.pipe(
+    return this.authService.User$.pipe(
       take(1),
       map(user => {
         return !!user;
@@ -40,17 +40,5 @@ export class AuthGuard implements CanActivate {
         }
       })
     );
-  }
-
-  haveUserInfo(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.userService.UserCollectionExist) {
-      return true;
-    }
-
-    this.router.navigate(['/user/edit']);
-    return false;
   }
 }
