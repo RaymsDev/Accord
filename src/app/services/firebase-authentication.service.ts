@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { FirebaseAuthentication } from '@ionic-native/firebase-authentication/ngx';
-import { Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseAuthenticationService {
-  public get Auth$(): Observable<firebase.User> {
+  public get Auth$(): Subject<firebase.User> {
     return this.auth$;
   }
-  public set Auth$(v: Observable<firebase.User>) {
+  public set Auth$(v: Subject<firebase.User>) {
     this.auth$ = v;
   }
 
@@ -21,6 +21,7 @@ export class FirebaseAuthenticationService {
     private nativeAuth: FirebaseAuthentication
   ) {
     this.isAndroid = this.platform.is('cordova') && this.platform.is('android');
+    this.Auth$ = new Subject<firebase.User>();
     if (this.isAndroid) {
       this.initAndroid();
     } else {
@@ -29,15 +30,29 @@ export class FirebaseAuthenticationService {
   }
   private isAndroid: boolean;
 
-  private auth$: Observable<firebase.User>;
+  private auth$: Subject<firebase.User>;
 
   private async initAndroid() {
     await this.platform.ready();
-    this.Auth$ = this.nativeAuth.onAuthStateChanged();
+    this.nativeAuth.onAuthStateChanged().subscribe(
+      state => {
+        this.Auth$.next(state);
+      },
+      error => {
+        this.Auth$.error(error);
+      }
+    );
   }
 
   private initWeb() {
-    this.Auth$ = this.webAuth.authState;
+    this.webAuth.authState.subscribe(
+      state => {
+        this.Auth$.next(state);
+      },
+      error => {
+        this.Auth$.error(error);
+      }
+    );
   }
 
   SignInWithVerificationIdAndroid(verificationId: string, code: any) {

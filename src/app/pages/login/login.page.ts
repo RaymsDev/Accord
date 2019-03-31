@@ -10,6 +10,7 @@ import {
   Validators
 } from '@angular/forms';
 import { AlertOptions } from '@ionic/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ export class LoginPage implements OnInit, AfterViewInit {
     private authService: AuthService,
     private platform: Platform,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private router: Router
   ) {}
   public IsAndroid: boolean;
   public Verification: string;
@@ -84,31 +86,31 @@ export class LoginPage implements OnInit, AfterViewInit {
   }
 
   private async promptCodeWeb(confirmationResult: auth.ConfirmationResult) {
-    const alertOptions = {
+    const alertOption = {
       ...this.alertOptions
     };
-    alertOptions.buttons.push({
+    alertOption.buttons.push({
       text: 'Check',
       cssClass: 'secondary',
       handler: data => {
         this.checkCodeWeb(data.code, confirmationResult);
       }
     });
-    const alert = await this.alertController.create(alertOptions);
+    const alert = await this.alertController.create(alertOption);
     await alert.present();
   }
   private async promptCodeAndroid(verificationId: string) {
-    const alertOptions = {
+    const alertOption = {
       ...this.alertOptions
     };
-    alertOptions.buttons.push({
+    alertOption.buttons.push({
       text: 'Check',
       cssClass: 'secondary',
       handler: data => {
         this.checkCodeAndroid(data.code, verificationId);
       }
     });
-    const alert = await this.alertController.create(alertOptions);
+    const alert = await this.alertController.create(alertOption);
     await alert.present();
   }
 
@@ -117,7 +119,14 @@ export class LoginPage implements OnInit, AfterViewInit {
       .confirm(code)
       .then(result => {
         if (result && result.user) {
-          this.authService.CheckUserInfoAndRedirect(result.user.uid);
+          return this.authService.CheckUserInfoAndRedirect(result.user.uid);
+        }
+      })
+      .then(userData => {
+        if (userData.exists) {
+          this.router.navigate(['/']);
+        } else {
+          this.router.navigate(['/user/edit']);
         }
       })
       .catch(error => {
@@ -128,8 +137,15 @@ export class LoginPage implements OnInit, AfterViewInit {
     this.authService
       .SignInWithVerificationIdAndroid(verificationId, code)
       .then(result => {
-        if (result && result.user) {
-          this.authService.CheckUserInfoAndRedirect(result.user.uid);
+        if (result) {
+          return this.authService.CheckUserInfoAndRedirect(result.uid);
+        }
+      })
+      .then(userData => {
+        if (userData.exists) {
+          this.router.navigate(['/']);
+        } else {
+          this.router.navigate(['/user/edit']);
         }
       })
       .catch(error => this.showToastError());

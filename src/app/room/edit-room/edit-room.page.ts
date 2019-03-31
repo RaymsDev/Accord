@@ -43,6 +43,7 @@ export class EditRoomPage implements OnInit {
   ngOnInit() {
     this.roomId = this.route.snapshot.paramMap.get('id');
     this.initForm();
+    this.SelectableUserList = [];
     this.IsEditMode = this.roomId ? true : false;
     if (this.IsEditMode) {
       this.roomService.GetRoom$(this.roomId).subscribe(room => {
@@ -89,13 +90,15 @@ export class EditRoomPage implements OnInit {
         )
         .pipe(
           map(users => {
-            return this.removeDuplicates(users);
+            return this.removeDuplicates(users ? users : []);
           })
         )
         .pipe(
           map(users => {
             // We don't want current user our list
-            return users.filter(u => u.id !== this.authService.user.uid);
+            return users
+              ? users.filter(u => u.id !== this.authService.user.uid)
+              : [];
           })
         );
     }
