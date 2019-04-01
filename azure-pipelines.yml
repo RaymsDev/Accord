@@ -11,7 +11,7 @@ pool:
 
 variables:
   imageName: 'accord:$(build.buildId)'
-  containerName : 'ionic-apk-builder$($(build.buildId))'
+  containerName : 'ionic-apk-builder$(build.buildId)'
 
 steps:
 # Download Secure File
