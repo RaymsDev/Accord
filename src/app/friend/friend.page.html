@@ -11,9 +11,9 @@
 </ion-header>
 
 <ion-content padding color="dark">
-  <ion-card>
+  <ion-card color="tertiary">
     <ion-card-header>
-      <ion-card-title color="light">Your friends</ion-card-title>
+      <ion-card-title>Your friends</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <div *ngIf="myFriends.length > 0; else noFriends">
@@ -38,9 +38,9 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <ion-card color="tertiary">
     <ion-card-header>
-      <ion-card-title color="light">Add Friends</ion-card-title>
+      <ion-card-title>Add Friends</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-item color="tertiary">
@@ -63,7 +63,7 @@
       </ion-button>
 
       <p *ngIf="noFriendFound">
-        We don't found the guy you search, or he is early in your friend
+        We don't found the guy you search, or he is already in your friends
       </p>
       <ion-list
         class="friends-list background-primary"
@@ -77,20 +77,26 @@
         </ng-container>
       </ion-list>
       <ion-button
-        color="tertiary"
+        color="secondary"
         *ngIf="display_possible_friend_list"
         (click)="addToMyFriend()"
         >Add</ion-button
       >
     </ion-card-content>
   </ion-card>
-
-  <ion-item *ngIf="IsMobile">
-    <ion-button (click)="onClickSuggestFriend()">Suggest me friend</ion-button>
-    <ion-progress-bar type="indeterminate"></ion-progress-bar>
-    <p *ngFor="let pfriend of suggested_friend">
-      Possible friend: {{ pfriend.nickname }}
-      <ion-button (click)="addSuggestedFriend(pfriend.ui)">Add</ion-button>
-    </p>
-  </ion-item>
+  <ion-card *ngIf="IsMobile" color="tertiary">
+    <ion-card-content>
+      <ion-button size="full" color="secondary" (click)="onClickSuggestFriend()"
+        >Suggest me friend</ion-button
+      >
+      <ion-progress-bar
+        *ngIf="displayLoader"
+        type="indeterminate"
+      ></ion-progress-bar>
+      <p *ngFor="let pfriend of suggested_friend">
+        Possible friend: {{ pfriend.nickname }}
+        <ion-button (click)="addSuggestedFriend(pfriend.uid)">Add</ion-button>
+      </p>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
