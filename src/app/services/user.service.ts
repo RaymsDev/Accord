@@ -3,7 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore/firestore';
 import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/collection';
 import { IUser } from '../models/IUser';
 import { environment } from 'src/environments/environment.prod';
-import { map, take, switchMap, mergeMap, flatMap } from 'rxjs/operators';
+import { map, take, switchMap, mergeMap, flatMap, tap } from 'rxjs/operators';
 import { Observable, combineLatest, from, EMPTY } from 'rxjs';
 import { AuthService } from './auth.service';
 import { DocumentReference } from '@angular/fire/firestore';
@@ -63,12 +63,13 @@ export class UserService {
       .toPromise<boolean>();
   }
 
-  public getNewUserInit(): IUser {
+  public getNewUserInit(phone: string): IUser {
     const user: IUser = {
       nickname: null,
       pictureUrl: null,
       email: null,
       createdAt: Date.now().toString(),
+      phone: phone,
       uid: this.authService.currentUserId,
       friends: new Array<DocumentReference>()
     };
@@ -114,4 +115,46 @@ export class UserService {
       })
     );
   }
+
+  // public get GetCurrentFriends$(): Observable<IUser[]> {
+  //   return this.CurrentUser$.pipe(
+  //     switchMap((user) => {
+  //       const userDocs = user.friends.map(f => this.User$(f.id));
+  //       const combined = combineLatest(userDocs);
+  //       return combined;
+  //     })
+  //   );
+  // }
+
+  public sendProfileImg(file: string) {
+    // this.afStore.
+  }
+
+  public addFriend(uid: string) {
+    this.CurrentUser$.pipe(
+      tap((user: IUser) => {
+        this.afStore.collection(environment.endpoints.users).doc(uid)
+          .get().pipe(
+            tap((friend) => {
+              user.friends.push(friend.ref);
+              this.UpdateUser(user);
+            })).subscribe();
+      })
+    ).subscribe();
+
+    // .then(() => {
+    //   this.UpdateUser(me);
+    // });
+  }
+
+  public deleteFriend(uid: string) { }
+
+  // TODO Where nickname is not him self
+  public getOtherUserByNickName(nickname: string): Observable<IUser[]> {
+    return this.afStore.collection<IUser>(environment.endpoints.users, ref =>
+      ref.where('nickname', '==', nickname))
+      .valueChanges();
+  }
+
+
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { IUser } from 'src/app/models/IUser';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -14,8 +15,9 @@ export class EditPage implements OnInit {
 
   constructor(
     private userService: UserService,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
     this.userService.UserCollectionExist().then(exist => {
@@ -24,7 +26,8 @@ export class EditPage implements OnInit {
         this.newUser = false;
       } else {
         this.newUser = true;
-        this.user = this.userService.getNewUserInit();
+        const phone = this.route.snapshot.paramMap.get('phoneNumber');
+        this.user = this.userService.getNewUserInit(phone);
       }
     });
   }

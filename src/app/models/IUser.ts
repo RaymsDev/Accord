@@ -1,3 +1,4 @@
+import { reference } from '@angular/core/src/render3';
 import { DocumentReference } from '@angular/fire/firestore';
 
 export interface IUser {
@@ -7,5 +8,6 @@ export interface IUser {
   nickname: string;
   pictureUrl: string;
   createdAt: string;
-  friends: DocumentReference[];
+  phone?: string;
+  friends?: DocumentReference[];
 }

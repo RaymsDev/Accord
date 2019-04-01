@@ -28,8 +28,18 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'user/edit/:phoneNumber',
+    loadChildren: './user/edit/edit.module#EditPageModule',
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'user/edit',
     loadChildren: './user/edit/edit.module#EditPageModule',
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'friend',
+    loadChildren: './friend/friend.module#FriendPageModule',
     canActivate: [AuthGuard]
   }
 ];
@@ -38,4 +48,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
