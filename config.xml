@@ -3,7 +3,7 @@
     <name>Accord</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.1.61:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -91,6 +91,5 @@
     <plugin name="cordova-plugin-firebase-authentication" spec="1.1.2">
         <variable name="FIREBASE_AUTH_VERSION" value="16.1.+" />
     </plugin>
-    <allow-navigation href="http://192.168.1.61:8100" sessionid="daa500c8" />
-    <engine name="android" spec="7.1.4" />
+    <engine name="android" spec="~7.1.4" />
 </widget>
