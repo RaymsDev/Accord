@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, DoCheck } from '@angular/core';
 
-import { AuthService } from './services/auth.service';
-import { Platform, ToastController } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { RoomService } from './services/room.service';
-import { Firebase } from '@ionic-native/firebase/ngx';
-import { User } from 'firebase';
 import { UserService } from './services/user.service';
+import { IUser } from './models/IUser';
+import { Subscription } from 'rxjs';
 
 const pages = [
   {
@@ -22,36 +21,50 @@ const pages = [
   templateUrl: 'app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements DoCheck {
   public appPages = pages;
-  public User = null;
-
+  public User: IUser = null;
+  private userSubscription: Subscription;
+  private roomSubscription: Subscription;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private roomService: RoomService,
-    private userService: UserService,
-    private firebase: Firebase,
-    private toaster: ToastController
+    private userService: UserService
   ) {
     this.initializeApp();
-    this.userService.CurrentUser$.subscribe(user => {
-      this.User = user;
-    });
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
+      this.watchUser();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.initNotifications();
-      this.initRooms();
+      this.watchRooms();
     });
   }
 
-  initRooms() {
-    this.roomService.HasMember$.subscribe(rooms => {
+  ngDoCheck() {
+    // Dirty
+    if (this.userSubscription && this.userSubscription.closed) {
+      this.watchUser();
+    }
+
+    if (this.roomSubscription && this.roomSubscription.closed) {
+      this.watchRooms();
+    }
+  }
+
+  private watchUser() {
+    this.userSubscription = this.userService
+      .GetCurrentUser$()
+      .subscribe(user => {
+        this.User = user;
+      });
+  }
+  private watchRooms() {
+    this.roomSubscription = this.roomService.HasMember$.subscribe(rooms => {
       this.appPages = [...pages];
       rooms
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -63,23 +76,5 @@ export class AppComponent {
           });
         });
     });
-  }
-
-  private initNotifications() {
-    if (this.platform.is('mobile')) {
-      this.firebase.subscribe('all');
-
-      this.firebase.onNotificationOpen().subscribe(async response => {
-        if (response.tap) {
-        } else {
-          const toast = await this.toaster.create({
-            message: response.body,
-            duration: 3000
-          });
-
-          toast.present();
-        }
-      });
-    }
   }
 }

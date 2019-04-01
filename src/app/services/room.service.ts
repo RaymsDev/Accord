@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { IUser } from '../models/IUser';
 import { AuthService } from './auth.service';
 import { endpoints } from 'src/environments/endpoints';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -21,20 +22,22 @@ export class RoomService {
   constructor(
     private afStore: AngularFirestore,
     private userService: UserService,
-    private authService: AuthService
+    private platform: Platform
   ) {
-    this.roomCollection = this.afStore.collection<IRoom>(
-      environment.endpoints.rooms
-    );
-    this.Rooms$ = this.roomCollection.stateChanges(['added']).pipe(
-      map(actions =>
-        actions.map(a => {
-          const data = a.payload.doc.data() as IRoom;
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        })
-      )
-    );
+    this.platform.ready().then(() => {
+      this.roomCollection = this.afStore.collection<IRoom>(
+        environment.endpoints.rooms
+      );
+      this.Rooms$ = this.roomCollection.stateChanges(['added']).pipe(
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as IRoom;
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
+      );
+    });
   }
 
   public GetRoom$(roomId): Observable<IRoom> {
@@ -52,7 +55,7 @@ export class RoomService {
 
   async SendMessage(currentUser: IUser, roomId: string, content) {
     const data: IMessage = {
-      userId: currentUser.id,
+      userId: currentUser.uid,
       content,
       createdAt: Date.now()
     };
@@ -84,7 +87,7 @@ export class RoomService {
       map(users => {
         users.forEach(user => {
           if (user) {
-            joinKeys[user.id] = user;
+            joinKeys[user.uid] = user;
           }
         });
         room.messages = room.messages
@@ -99,11 +102,14 @@ export class RoomService {
   }
 
   get Owned$(): Observable<IRoom[]> {
-    return this.userService.CurrentUser$.pipe(
+    return this.userService.GetCurrentUser$().pipe(
       switchMap(user => {
+        if (!user) {
+          return of([]);
+        }
         return this.afStore
           .collection<IRoom>(environment.endpoints.rooms, ref =>
-            ref.where('ownerId', '==', user.id)
+            ref.where('ownerId', '==', user.uid)
           )
           .snapshotChanges()
           .pipe(
@@ -120,11 +126,14 @@ export class RoomService {
   }
 
   get HasMember$(): Observable<IRoom[]> {
-    return this.userService.CurrentUser$.pipe(
+    return this.userService.GetCurrentUser$().pipe(
       switchMap(user => {
+        if (!user) {
+          return of([]);
+        }
         return this.afStore
           .collection<IRoom>(environment.endpoints.rooms, ref =>
-            ref.where('memberIdList', 'array-contains', user.id)
+            ref.where('memberIdList', 'array-contains', user.uid)
           )
           .snapshotChanges()
           .pipe(

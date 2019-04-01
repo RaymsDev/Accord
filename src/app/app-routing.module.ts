@@ -19,17 +19,8 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'login',
-    loadChildren: './user/login/login.module#LoginPageModule'
-  },
-  {
     path: 'room',
     loadChildren: './room/room.module#RoomPageModule',
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'user/edit/:phoneNumber',
-    loadChildren: './user/edit/edit.module#EditPageModule',
     canActivate: [AuthGuard]
   },
   {
@@ -41,11 +32,12 @@ const routes: Routes = [
     path: 'friend',
     loadChildren: './friend/friend.module#FriendPageModule',
     canActivate: [AuthGuard]
-  }
+  },
+  { path: 'login', loadChildren: './pages/login/login.module#LoginPageModule' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

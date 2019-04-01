@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  AfterContentChecked
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IRoom } from '../models/IRoom';
 import { RoomService } from '../services/room.service';
@@ -6,7 +12,8 @@ import { Observable } from 'rxjs/internal/Observable';
 import { IMessage } from '../models/IMessage';
 import { UserService } from '../services/user.service';
 import { IUser } from '../models/IUser';
-import { PopoverController, ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, Platform } from '@ionic/angular';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-room',
@@ -19,30 +26,42 @@ export class RoomPage implements OnInit {
   public Room$: Observable<IRoom>;
   public newMessage: string;
   private roomId: string;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private roomService: RoomService,
     private userService: UserService,
-    private actionSheetController: ActionSheetController
-  ) { }
+    private actionSheetController: ActionSheetController,
+    private platform: Platform
+  ) {}
 
   ngOnInit() {
-    this.initRoom();
-    this.userService.CurrentUser$.subscribe(authUser => {
-      this.CurrentUser = authUser;
+    this.platform.ready().then(() => {
+      this.initRoom();
+      this.initCurrentUser();
     });
   }
 
   ionViewDidEnter() {
-    if (this.content) {
-      this.content.scrollToBottom(300);
-    }
+    this.ScrollToBottom();
+  }
+
+  private initCurrentUser() {
+    this.userService.GetCurrentUser$().subscribe(authUser => {
+      this.CurrentUser = authUser;
+    });
   }
 
   private initRoom() {
     this.roomId = this.route.snapshot.paramMap.get('id');
     this.Room$ = this.roomService.JoinUser(this.roomId);
+  }
+
+  public ScrollToBottom() {
+    if (this.content) {
+      this.content.scrollToBottom(300);
+    }
   }
 
   public SendMessage(roomId: string) {

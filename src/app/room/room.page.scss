@@ -1,4 +1,4 @@
-@import "./../../theme/variables.scss";
+@import './../../theme/variables.scss';
 $space: 16px;
 .room-title {
   display: flex;
@@ -12,50 +12,11 @@ $space: 16px;
   flex-direction: column;
 }
 
-.message-container {
-  display: flex;
-  width: 100%;
-  .avatar {
-    height: 50px;
-    width: auto;
-    border-radius: 50%;
-  }
-  .message {
-    max-width: 60%;
-    padding: 0 0 0 $space;
-    .message-details {
-      display: flex;
-      width: 100%;
-      .name {
-        font-weight: bold;
-      }
-      .send-at {
-        padding: 0 4px 0 4px;
-        display: flex;
-        color: $medium;
-        font-size: 0.8em;
-        align-items: flex-end;
-      }
-      .message-content {
-        width: 100%;
-      }
-    }
-  }
-}
-
-.message-container.current-user {
-  flex-direction: row-reverse;
-  .message {
-    padding: 0 $space 0 0;
-    .message-details {
-      flex-direction: row-reverse;
-    }
-  }
-}
-
 .form {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
   background-color: $tertiary;
   .message-input {
     color: $light;

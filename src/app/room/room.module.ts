@@ -10,6 +10,7 @@ import { UserItemComponent } from '../components/user-item/user-item.component';
 import { MarkdownToHtmlPipe } from '../pipes/markdown-to-html.pipe';
 import { UserItemModule } from '../components/user-item/user-item.module';
 
+import { MessageComponent } from '../components/message/message.component';
 const routes: Routes = [
   {
     path: '',
@@ -35,10 +36,11 @@ const routes: Routes = [
     UserItemModule
   ],
   declarations: [
+    MessageComponent,
     RoomPage,
     EditRoomPage,
     TimeStampToDatePipe,
     MarkdownToHtmlPipe
   ]
 })
-export class RoomPageModule { }
+export class RoomPageModule {}
