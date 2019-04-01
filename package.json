@@ -1,7 +1,7 @@
 {
   "name": "accord",
   "version": "0.0.1",
-  "author": "Ionic Framework",
+  "author": "rayms.dev@gmail.com",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
@@ -21,7 +21,8 @@
     "docker-build": "docker build --rm -f \"dockerfile\" -t accord:latest .",
     "docker-run": "docker run --name ionic-apk-builder accord",
     "docker-cp": "docker cp ionic-apk-builder:/usr/app/accord.apk accord.apk",
-    "docker-apk": "npm run docker-build && npm run docker-run && npm run docker-cp"
+    "docker-apk": "npm run docker-build && npm run docker-run && npm run docker-cp && npm run docker-clean",
+    "docker-clean": "docker rm ionic-apk-builder"
   },
   "private": true,
   "dependencies": {
