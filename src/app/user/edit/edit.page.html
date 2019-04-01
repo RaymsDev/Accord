@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" *ngIf="!IsNewUser">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="room-title" slot="primary">
+      {{ IsNewUser ? 'Create Profile' : 'Edit Profile' }}
+    </ion-title>
+    <ion-icon name="contact" size="large" slot="end"></ion-icon>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="User" padding color="dark">
+  <ion-list lines="none" class="background-tertiary">
+    <ion-item color="tertiary">
+      <ion-label position="stacked">Email : </ion-label>
+      <ion-input [(ngModel)]="User.email"></ion-input>
+    </ion-item>
+
+    <ion-item color="tertiary">
+      <ion-label position="stacked">Nickname : </ion-label>
+      <ion-input [(ngModel)]="User.nickname"></ion-input>
+    </ion-item>
+
+    <ion-item color="tertiary">
+      <ion-label position="stacked">Picture url :</ion-label>
+      <ion-input [(ngModel)]="User.pictureUrl"></ion-input>
+    </ion-item>
+    <ion-button expand="full" color="primary" (click)="OnClickUpdateInfo()">
+      <ion-icon slot="start" name="create"></ion-icon>
+      {{ IsNewUser ? 'Create' : 'Edit' }}
+    </ion-button>
+    <ion-button
+      *ngIf="!IsNewUser"
+      expand="full"
+      color="secondary"
+      [routerLink]="['/friend']"
+    >
+      <ion-icon slot="start" name="contact"></ion-icon>
+      Manage Friends
+    </ion-button>
+    <ion-button expand="full" color="danger" (click)="OnClickLogout()">
+      <ion-icon slot="start" name="close"></ion-icon>
+      Logout
+    </ion-button>
+  </ion-list>
+</ion-content>

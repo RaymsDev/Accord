@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- develop
 
 pool:
   vmImage: 'Ubuntu-16.04'
@@ -14,16 +14,39 @@ variables:
   containerName : 'ionic-apk-builder$($(build.buildId))'
 
 steps:
+# Download Secure File
+# Download a secure file to a temporary location on the build or release agent
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: accord-release-key.keystore
+
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: firebase.config.ts
+
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: google-services.json
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(Agent.TempDirectory)
+    contents: '**' 
+    targetFolder: $(Build.SourcesDirectory)
+    #cleanTargetFolder: false # Optional
+    overWrite: true # Optional
+    #flattenFolders: false # Optional
+
 - script: docker build -f Dockerfile -t $(imageName) .
   displayName: 'docker build'
 
 - script: docker run --name $(containerName) $(imageName)
   displayName: 'docker run'
 
-- script: docker cp accord.apk $(containerName):/usr/app/accord.apk
+- script: docker cp $(containerName):/usr/app/accord.apk accord.apk
   displayName: 'docker copy apk'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    pathtoPublish: $(Build.SourcesDirectory)/**/*.apk
     artifactName: apk

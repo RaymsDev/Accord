@@ -1,0 +1,16 @@
+<ion-item
+  [color]="SelectableUser.IsSelected ? 'secondary' : 'primary'"
+  (click)="OnClickToggle()"
+>
+  <ion-avatar slot="start">
+    <img
+      *ngIf="!SelectableUser.Item.pictureUrl; else hasPicture"
+      [src]="'https://api.adorable.io/avatars/285/' + SelectableUser.Item.email"
+    />
+
+    <ng-template #hasPicture>
+      <img [src]="SelectableUser.Item.pictureUrl" />
+    </ng-template>
+  </ion-avatar>
+  <ion-label>{{ SelectableUser.Item.nickname }}</ion-label>
+</ion-item>

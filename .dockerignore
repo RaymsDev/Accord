@@ -1,0 +1,14 @@
+
+.vscode/
+e2e/
+node_modules/
+platforms/
+plugins/
+www/
+
+.gitignore
+.dockerignore
+azure-pipelines.yml
+Dockerfile
+
+*.apk

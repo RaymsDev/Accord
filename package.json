@@ -1,31 +1,68 @@
 {
-  "name": "Accord",
+  "name": "accord",
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "npx ionic serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "android": "npx ionic cordova run android -l",
+    "dev": "npx ionic serve",
+    "platforms": "npx ionic cordova platform add android --confim",
+    "build-prod": "npx ionic cordova build android --prod --release",
+    "clean": "npx rimraf ./www && npx rimraf ./platforms && npx rimraf ./plugins",
+    "generate-key": "keytool -genkey -v -keystore accord-release-key.keystore -alias accord-r-k -keyalg RSA -keysize 2048 -validity 10000",
+    "sign-apk": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore accord-release-key.keystore app-release-unsigned.apk accord-r-k",
+    "zip-align": "zipalign -v 4 accord-release-unsigned.apk accord.apk",
+    "docker-build": "docker build --rm -f \"dockerfile\" -t accord:latest .",
+    "docker-run": "docker run --name ionic-apk-builder accord",
+    "docker-cp": "docker cp ionic-apk-builder:/usr/app/accord.apk accord.apk",
+    "docker-apk": "npm run docker-build && npm run docker-run && npm run docker-cp"
   },
   "private": true,
   "dependencies": {
     "@angular/common": "^7.2.2",
     "@angular/core": "^7.2.2",
+    "@angular/fire": "^5.1.1",
     "@angular/forms": "^7.2.2",
     "@angular/http": "^7.2.2",
     "@angular/platform-browser": "^7.2.2",
     "@angular/platform-browser-dynamic": "^7.2.2",
     "@angular/router": "^7.2.2",
+    "@ionic-native/contacts": "^5.2.0",
     "@ionic-native/core": "^5.0.0",
+    "@ionic-native/firebase": "^5.2.0",
+    "@ionic-native/firebase-authentication": "^5.3.0",
+    "@ionic-native/http": "^5.2.0",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.0.0",
+    "@types/showdown": "^1.9.2",
+    "cordova-android": "7.1.4",
+    "cordova-plugin-advanced-http": "^2.0.6",
+    "cordova-plugin-appcenter-analytics": "^0.3.3",
+    "cordova-plugin-appcenter-crashes": "^0.3.3",
+    "cordova-plugin-appcenter-shared": "^0.3.3",
+    "cordova-plugin-contacts": "^3.0.1",
+    "cordova-plugin-device": "^2.0.2",
+    "cordova-plugin-file": "^6.0.1",
+    "cordova-plugin-firebase": "^2.0.5",
+    "cordova-plugin-firebase-authentication": "^1.1.2",
+    "cordova-plugin-ionic-keyboard": "^2.1.3",
+    "cordova-plugin-ionic-webview": "^2.4.1",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-statusbar": "^2.4.2",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-support-android-plugin": "^1.0.1",
+    "cordova-support-google-services": "^1.3.1",
     "core-js": "^2.5.4",
+    "firebase": "^5.8.1",
     "rxjs": "~6.3.3",
+    "showdown": "^1.9.0",
     "zone.js": "~0.8.29"
   },
   "devDependencies": {
@@ -38,10 +75,11 @@
     "@angular/compiler-cli": "~7.2.2",
     "@angular/language-service": "~7.2.2",
     "@ionic/angular-toolkit": "~1.2.0",
-    "@types/node": "~10.12.0",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
+    "@types/node": "~10.12.0",
     "codelyzer": "~4.5.0",
+    "cordova": "^8.1.2",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~3.1.4",
@@ -50,9 +88,33 @@
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.4.0",
+    "rimraf": "^2.6.3",
     "ts-node": "~8.0.0",
     "tslint": "~5.12.0",
     "typescript": "~3.1.6"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-appcenter-analytics": {},
+      "cordova-plugin-appcenter-crashes": {},
+      "cordova-plugin-firebase": {},
+      "cordova-plugin-contacts": {},
+      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-firebase-authentication": {
+        "FIREBASE_AUTH_VERSION": "16.1.+"
+      }
+    },
+    "platforms": [
+      "android"
+    ]
+  }
 }

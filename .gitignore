@@ -32,3 +32,10 @@ $RECYCLE.BIN/
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
+
+
+*/**/*.config.json
+*/**/*.config.ts
+*.keystore
+google-services.json
+*.apk
