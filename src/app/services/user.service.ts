@@ -4,38 +4,51 @@ import { AngularFirestoreCollection } from '@angular/fire/firestore/collection/c
 import { IUser } from '../models/IUser';
 import { environment } from 'src/environments/environment.prod';
 import { map, take, switchMap, mergeMap, flatMap, tap } from 'rxjs/operators';
-import { Observable, combineLatest, from, EMPTY } from 'rxjs';
+import { Observable, combineLatest, from, EMPTY, of, Subject } from 'rxjs';
 import { AuthService } from './auth.service';
 import { DocumentReference } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { endpoints } from 'src/environments/endpoints';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   private userCollection: AngularFirestoreCollection<IUser>;
-
   public get UserCollection() {
     return this.userCollection;
   }
 
   constructor(
     private authService: AuthService,
-    private afStore: AngularFirestore
+    private afStore: AngularFirestore,
+    private platform: Platform
   ) {
-    this.userCollection = this.afStore.collection<IUser>(
-      environment.endpoints.users
-    );
+    this.platform.ready().then(() => {
+      this.userCollection = this.afStore.collection<IUser>(
+        environment.endpoints.users
+      );
+    });
   }
 
-  public get CurrentUser$(): Observable<IUser> {
-    return this.authService.userObservable.pipe(
-      mergeMap(user => {
-        if (!user) {
-          return EMPTY;
-        }
-        return this.User$(user.uid);
+  public NewUser(phone: string): IUser {
+    const user: IUser = {
+      nickname: null,
+      pictureUrl: null,
+      email: null,
+      phone: phone,
+      createdAt: Date.now().toString(),
+      uid: this.authService.CurrentUserId,
+      friends: new Array<DocumentReference>()
+    };
+    return user;
+  }
+
+  public get GetCurrentFriends$(): Observable<IUser[]> {
+    return this.GetCurrentUser$().pipe(
+      switchMap(user => {
+        return this.GetUsers$(user.friends.map(f => f.id));
       })
     );
   }
@@ -54,38 +67,27 @@ export class UserService {
       );
   }
 
-  public UserCollectionExist(): Promise<Boolean> {
+  public UserCollectionExist$(): Observable<boolean> {
     return this.afStore
       .collection(environment.endpoints.users)
-      .doc(this.authService.currentUserId)
+      .doc(this.authService.CurrentUserId)
       .get()
-      .pipe(map(user => user.exists))
-      .toPromise<boolean>();
+      .pipe(map(user => user.exists));
   }
 
-  public getNewUserInit(phone: string): IUser {
-    const user: IUser = {
-      nickname: null,
-      pictureUrl: null,
-      email: null,
-      createdAt: Date.now().toString(),
-      phone: phone,
-      uid: this.authService.currentUserId,
-      friends: new Array<DocumentReference>()
-    };
-    return user;
-  }
-
-  public GetCurrentUser(): Observable<IUser> {
+  public GetCurrentUser$(): Observable<IUser> {
+    if (!this.authService.IsAuthenticated) {
+      return of(null);
+    }
     return this.afStore
       .collection(environment.endpoints.users)
-      .doc(this.authService.user.uid)
+      .doc(this.authService.CurrentUserId)
       .get()
       .pipe(map(doc => doc.data() as IUser));
   }
 
   public AddUser(user: IUser) {
-    this.afStore
+    return this.afStore
       .collection(environment.endpoints.users)
       .doc(user.uid)
       .set({
@@ -102,59 +104,39 @@ export class UserService {
       });
   }
 
-  public GetUsers(userIdList: string[]): Observable<IUser[]> {
+  public GetUsers$(userIdList: string[]): Observable<IUser[]> {
     const userDocs = userIdList.map(id => this.User$(id));
     const combined = combineLatest(userDocs);
     return combined;
   }
 
-  public get GetCurrentFriends$(): Observable<IUser[]> {
-    return this.CurrentUser$.pipe(
-      switchMap(user => {
-        return this.GetUsers(user.friends.map(f => f.id));
-      })
-    );
-  }
-
-  // public get GetCurrentFriends$(): Observable<IUser[]> {
-  //   return this.CurrentUser$.pipe(
-  //     switchMap((user) => {
-  //       const userDocs = user.friends.map(f => this.User$(f.id));
-  //       const combined = combineLatest(userDocs);
-  //       return combined;
-  //     })
-  //   );
-  // }
-
-  public sendProfileImg(file: string) {
-    // this.afStore.
-  }
-
+  // TODO : Fix it
   public addFriend(uid: string) {
-    this.CurrentUser$.pipe(
-      tap((user: IUser) => {
-        this.afStore.collection(environment.endpoints.users).doc(uid)
-          .get().pipe(
-            tap((friend) => {
-              user.friends.push(friend.ref);
-              this.UpdateUser(user);
-            })).subscribe();
-      })
-    ).subscribe();
-
-    // .then(() => {
-    //   this.UpdateUser(me);
-    // });
+    this.GetCurrentUser$()
+      .pipe(
+        tap((user: IUser) => {
+          this.afStore
+            .collection(environment.endpoints.users)
+            .doc(uid)
+            .get()
+            .pipe(
+              tap(friend => {
+                user.friends.push(friend.ref);
+                this.UpdateUser(user);
+              })
+            )
+            .subscribe();
+        })
+      )
+      .subscribe();
   }
-
-  public deleteFriend(uid: string) { }
 
   // TODO Where nickname is not him self
   public getOtherUserByNickName(nickname: string): Observable<IUser[]> {
-    return this.afStore.collection<IUser>(environment.endpoints.users, ref =>
-      ref.where('nickname', '==', nickname))
+    return this.afStore
+      .collection<IUser>(environment.endpoints.users, ref =>
+        ref.where('nickname', '==', nickname)
+      )
       .valueChanges();
   }
-
-
 }

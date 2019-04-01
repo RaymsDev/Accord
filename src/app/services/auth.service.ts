@@ -1,98 +1,58 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth/auth';
 import { Observable, from } from 'rxjs';
-
-import { ToastController } from '@ionic/angular';
-import { Router } from '@angular/router';
-import { async } from 'q';
-import { UserService } from './user.service';
-import { IUser } from '../models/IUser';
 import { environment } from 'src/environments/environment.prod';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { map } from 'rxjs/operators';
-
+import { FirebaseAuthenticationService } from './firebase-authentication.service';
+import { LocalStorageService } from './local-storage.service';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  user: firebase.User;
-  userObservable: Observable<firebase.User>;
-  authObservable: Observable<firebase.auth.Auth>;
+  private user$: Observable<firebase.UserInfo>;
 
   constructor(
-    private firebaseAuth: AngularFireAuth,
-    private toastCtrl: ToastController,
-    private router: Router,
-    private afStore: AngularFirestore
+    private firebaseAuth: FirebaseAuthenticationService,
+    private afStore: AngularFirestore,
+    private localStorage: LocalStorageService
   ) {
-    this.firebaseAuth.authState.subscribe(auth => {
-      this.user = auth;
-    });
-    this.userObservable = firebaseAuth.authState;
+    this.user$ = this.firebaseAuth.Auth$;
   }
 
-  get authenticated(): boolean {
-    return this.user !== null && this.user !== undefined;
+  public get IsAuthenticated(): boolean {
+    return !!this.localStorage.Uid;
   }
 
-  get User(): Observable<firebase.User> {
-    return this.userObservable;
+  public get User$() {
+    return this.user$;
+  }
+  public get CurrentUserId(): string {
+    return this.localStorage.Uid;
   }
 
-  get currentUser(): IUser | any {
-    return this.authenticated ? this.user : null;
+  public VerifyPhoneAndroid(phone: string) {
+    return this.firebaseAuth.VerifyPhoneAndroid(phone);
   }
 
-  get currentUserObservable(): any {
-    return this.firebaseAuth.authState;
+  public VerifyPhone(phone: string, recaptcha: any) {
+    return this.firebaseAuth.VerifyPhoneWeb(phone, recaptcha);
   }
 
-  // Returns current user UID
-  get currentUserId(): string {
-    return this.authenticated ? this.user.uid : '';
+  public SignInWithVerificationIdAndroid(verificationId: string, code: any) {
+    return this.firebaseAuth.SignInWithVerificationIdAndroid(
+      verificationId,
+      code
+    );
   }
 
-  send_phone_code(num, appVerifier): Observable<any> {
-    return from(this.firebaseAuth.auth.signInWithPhoneNumber(num, appVerifier));
+  public Logout() {
+    return this.firebaseAuth.SignOut();
   }
 
-  async verify_phone_code(windowsRef, verificationCode, num) {
-    await windowsRef.confirmationResult
-      .confirm(verificationCode)
-      .then(async result => {
-        (await this.toastCtrl.create({
-          message: 'Welcome',
-          color: 'success',
-          duration: 1500
-        })).present();
-        this.checkUserInfoAndRedirect(num);
-      })
-      .catch(async error => {
-        (await this.toastCtrl.create({
-          message: 'Welcome',
-          color: 'danger',
-          duration: 1500
-        })).present();
-      });
-  }
-
-  logout() {
-    this.firebaseAuth.auth.signOut();
-    this.router.navigate(['/']);
-  }
-
-  checkUserInfoAndRedirect(num = '') {
-    this.afStore
+  public CheckUserInfoAndRedirect(userId) {
+    return this.afStore
       .collection(environment.endpoints.users)
-      .doc(this.user.uid)
+      .doc(userId)
       .get()
-      .toPromise()
-      .then(userData => {
-        if (userData.exists) {
-          this.router.navigate(['/']);
-        } else {
-          this.router.navigate(['/user/edit/' + num]);
-        }
-      });
+      .toPromise();
   }
 }

@@ -21,11 +21,11 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { RoomService } from './services/room.service';
 
 import { Firebase } from '@ionic-native/firebase/ngx/';
-import { PhoneInputComponent } from './user/phone-input/phone-input.component';
+import { FirebaseAuthentication } from '@ionic-native/firebase-authentication/ngx';
 
 
 @NgModule({
-  declarations: [AppComponent, PhoneInputComponent],
+  declarations: [AppComponent],
   entryComponents: [],
   imports: [
     BrowserModule,
@@ -36,6 +36,7 @@ import { PhoneInputComponent } from './user/phone-input/phone-input.component';
     AngularFirestoreModule
   ],
   providers: [
+    FirebaseAuthentication,
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

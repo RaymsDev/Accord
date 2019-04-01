@@ -1,4 +1,4 @@
-import { firebaseConfig } from './firebase.config';
+import { firebaseConfig } from '../../firebase.config';
 import { endpoints } from './endpoints';
 
 export const environment = {
