@@ -119,7 +119,7 @@ export class UserService {
       });
   }
 
-  public GetUsers$(userIdList: string[]): Observable<IUser[]> {
+  public GetUsers$(userIdList: string[] = []): Observable<IUser[]> {
     const userDocs = userIdList.map(id => this.User$(id));
     const combined = combineLatest(userDocs);
     return combined;

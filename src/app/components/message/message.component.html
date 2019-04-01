@@ -1,26 +1,27 @@
-<div
-  class="message-container"
-  [ngClass]="{ 'current-user': CurrentUser?.id == Message?.userId }"
-  #messages
->
-  <img
-    *ngIf="!Message.user?.pictureUrl; else hasPicture"
-    class="avatar"
-    [src]="AdorableUrl + Message.user?.email"
-  />
-  <ng-template #hasPicture>
-    <img class="avatar" [src]="Message.user?.pictureUrl" />
-  </ng-template>
+<ion-card class="message-card" #messages color="primary">
+  <ion-card-content
+    class="message-container"
+    [ngClass]="{ 'current-user': CurrentUser?.uid == Message?.userId }"
+  >
+    <img
+      *ngIf="!Message.user?.pictureUrl; else hasPicture"
+      class="avatar"
+      [src]="AdorableUrl + Message.user?.email"
+    />
+    <ng-template #hasPicture>
+      <img class="avatar" [src]="Message.user?.pictureUrl" />
+    </ng-template>
 
-  <div class="message">
-    <div class="message-details">
-      <div class="name">{{ Message.user?.nickname }}</div>
-      <div class="send-at">{{ Message.createdAt | timeStampToDate }}</div>
+    <div class="message">
+      <div class="message-details">
+        <div class="name">{{ Message.user?.nickname }}</div>
+        <div class="send-at">{{ Message.createdAt | timeStampToDate }}</div>
+      </div>
+
+      <p
+        class="message-content"
+        [innerHTML]="Message.content | markdownToHtml"
+      ></p>
     </div>
-
-    <p
-      class="message-content"
-      [innerHTML]="Message.content | markdownToHtml"
-    ></p>
-  </div>
-</div>
+  </ion-card-content>
+</ion-card>
