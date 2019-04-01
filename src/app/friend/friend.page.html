@@ -18,26 +18,21 @@
     <ion-card-content>
       <div *ngIf="myFriends.length > 0; else noFriends">
         <ng-container *ngFor="let friend of myFriends">
-          <ion-item-sliding>
-            <ion-item color="primary">
-              <ion-avatar slot="start">
-                <img
-                  *ngIf="!friend.pictureUrl; else hasPicture"
-                  [src]="'https://api.adorable.io/avatars/285/' + friend.email"
-                />
-                <ng-template #hasPicture>
-                  <img [src]="friend.pictureUrl" />
-                </ng-template>
-              </ion-avatar>
-              <ion-label>{{ friend.nickname }}</ion-label>
-            </ion-item>
-            <ion-item-options>
-              <ion-item-option color="danger" (click)="removeFriend(friend)">
-                <ion-icon slot="start" name="trash"></ion-icon>
-                Remove
-              </ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
+          <ion-item color="primary">
+            <ion-avatar slot="start">
+              <img
+                *ngIf="!friend.pictureUrl; else hasPicture"
+                [src]="'https://api.adorable.io/avatars/285/' + friend.email"
+              />
+              <ng-template #hasPicture>
+                <img [src]="friend.pictureUrl" />
+              </ng-template>
+            </ion-avatar>
+            <ion-label>{{ friend.nickname }}</ion-label>
+            <ion-button color="danger" (click)="removeFriend(friend)"
+              >Remove
+            </ion-button>
+          </ion-item>
         </ng-container>
       </div>
       <ng-template #noFriends>
@@ -53,8 +48,8 @@
       <ion-card-title>Add Friends</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-item color="tertiary">
-        <ion-label>
+      <ion-item color="primary">
+        <ion-label position="stacked">
           Search by:
         </ion-label>
         <ion-select [(ngModel)]="selectedSearch">
@@ -62,36 +57,39 @@
             search
           }}</ion-select-option>
         </ion-select>
+      </ion-item>
+      <ion-item color="primary">
         <ion-input
           type="text"
-          placeholder="{{ selectedSearch }}"
+          placeholder="search..."
           [(ngModel)]="searchString"
         ></ion-input>
       </ion-item>
-      <ion-button class="search-friend-button" (click)="searchSomeoneClick()">
+      <ion-button
+        size="full"
+        class="search-friend-button"
+        (click)="searchSomeoneClick()"
+      >
         <ion-icon name="search"></ion-icon> Search
       </ion-button>
 
-      <p *ngIf="noFriendFound">
-        We don't found the guy you search, or he is already in your friends
-      </p>
-      <ion-list
-        class="friends-list background-primary"
-        *ngIf="display_possible_friend_list"
-      >
-        <ng-container *ngFor="let friend of possible_friend_selectable">
-          <app-user-item
-            [SelectableUser]="friend"
-            [canSelect]="true"
-          ></app-user-item>
-        </ng-container>
-      </ion-list>
-      <ion-button
-        color="secondary"
-        *ngIf="display_possible_friend_list"
-        (click)="addToMyFriend()"
-        >Add</ion-button
-      >
+      <ng-container *ngFor="let friend of possible_friend_to_add">
+        <ion-item color="primary">
+          <ion-avatar slot="start">
+            <img
+              *ngIf="!friend.pictureUrl; else hasPicture"
+              [src]="'https://api.adorable.io/avatars/285/' + friend.email"
+            />
+            <ng-template #hasPicture>
+              <img [src]="friend.pictureUrl" />
+            </ng-template>
+          </ion-avatar>
+          <ion-label>{{ friend.nickname }}</ion-label>
+          <ion-button color="secondary" (click)="addSuggestedFriend(friend)"
+            >Add</ion-button
+          >
+        </ion-item>
+      </ng-container>
     </ion-card-content>
   </ion-card>
   <ion-card *ngIf="IsMobile" color="tertiary">
@@ -103,10 +101,24 @@
         *ngIf="displayLoader"
         type="indeterminate"
       ></ion-progress-bar>
-      <p *ngFor="let pfriend of suggested_friend">
-        Possible friend: {{ pfriend.nickname }}
-        <ion-button (click)="addSuggestedFriend(pfriend)">Add</ion-button>
-      </p>
+
+      <ng-container *ngFor="let friend of suggested_friend">
+        <ion-item color="primary">
+          <ion-avatar slot="start">
+            <img
+              *ngIf="!friend.pictureUrl; else hasPicture"
+              [src]="'https://api.adorable.io/avatars/285/' + friend.email"
+            />
+            <ng-template #hasPicture>
+              <img [src]="friend.pictureUrl" />
+            </ng-template>
+          </ion-avatar>
+          <ion-label>{{ friend.nickname }}</ion-label>
+          <ion-button color="secondary" (click)="addSuggestedFriend(friend)"
+            >Add</ion-button
+          >
+        </ion-item>
+      </ng-container>
     </ion-card-content>
   </ion-card>
 </ion-content>
