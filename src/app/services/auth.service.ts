@@ -48,7 +48,7 @@ export class AuthService {
     return this.firebaseAuth.SignOut();
   }
 
-  public CheckUserInfoAndRedirect(userId) {
+  public GetUserDoc(userId) {
     return this.afStore
       .collection(environment.endpoints.users)
       .doc(userId)
