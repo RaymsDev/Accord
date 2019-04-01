@@ -32,12 +32,8 @@ export class LoginPage implements OnInit, AfterViewInit {
 
       this.authService.User$.subscribe(user => {
         if (user) {
-          this.authService.CheckUserInfoAndRedirect(user.uid).then(userData => {
-            if (userData.exists) {
-              this.navigateToHome();
-            } else {
-              this.router.navigate(['/user/edit']);
-            }
+          this.authService.GetUserDoc(user.uid).then(userData => {
+            this.checkAndRedirect(userData);
           });
         }
       });
@@ -137,15 +133,9 @@ export class LoginPage implements OnInit, AfterViewInit {
       .confirm(code)
       .then(result => {
         if (result && result.user) {
-          this.authService
-            .CheckUserInfoAndRedirect(result.user.uid)
-            .then(userData => {
-              if (userData.exists) {
-                this.navigateToHome();
-              } else {
-                this.router.navigate(['/user/edit']);
-              }
-            });
+          this.authService.GetUserDoc(result.user.uid).then(userData => {
+            this.checkAndRedirect(userData);
+          });
         }
       })
       .catch(error => {
@@ -157,15 +147,9 @@ export class LoginPage implements OnInit, AfterViewInit {
       .SignInWithVerificationIdAndroid(verificationId, code)
       .then(result => {
         if (result && result.user) {
-          this.authService
-            .CheckUserInfoAndRedirect(result.user.uid)
-            .then(userData => {
-              if (userData.exists) {
-                this.navigateToHome();
-              } else {
-                this.router.navigate(['/user/edit']);
-              }
-            });
+          this.authService.GetUserDoc(result.user.uid).then(userData => {
+            this.checkAndRedirect(userData);
+          });
         }
       })
       .catch(error => this.showToastError());
@@ -191,5 +175,14 @@ export class LoginPage implements OnInit, AfterViewInit {
       return phoneRegex.test(phoneNumber.value) ? null : { pattern: false };
     };
     return validator;
+  }
+
+  private checkAndRedirect(userData: firebase.firestore.DocumentSnapshot) {
+    if (userData.exists) {
+      this.navigateToHome();
+    } else {
+      const { phone } = userData.data();
+      this.router.navigate(['/user/edit', phone]);
+    }
   }
 }
