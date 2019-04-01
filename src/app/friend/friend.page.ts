@@ -2,13 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FriendsService } from '../services/friends.service';
 import { IUser } from '../models/IUser';
 import { Platform } from '@ionic/angular';
-import { Http } from '@angular/http';
-import {
-  Contacts,
-  Contact,
-  ContactField,
-  ContactName
-} from '@ionic-native/contacts/ngx';
+import { Contacts, Contact } from '@ionic-native/contacts/ngx';
 import { ISelectable } from '../models/ISelectable';
 import { Selectable } from '../models/Selectable';
 
@@ -32,7 +26,7 @@ export class FriendPage implements OnInit {
 
   displayLoader = false;
   suggest_friend_btn = true;
-  suggested_friend: any;
+  suggested_friend: IUser[] = [];
   allContacts: Contact[];
 
   phonesNum: string[];
@@ -52,9 +46,8 @@ export class FriendPage implements OnInit {
   ngOnInit() {
     this.friendsService.getMyFriend().subscribe(friends => {
       this.myFriends = friends;
-      this.myFriends.forEach(element => {
-        this.myFriendsUid.push(element);
-      });
+
+      this.myFriendsUid = friends.map(f => f.uid);
     });
 
     this.IsMobile = this.platform.is('mobile');
@@ -73,6 +66,10 @@ export class FriendPage implements OnInit {
           this.formatPhoneNumber(contact.phoneNumbers.shift().value)
         );
         this.phonesNum = this.phonesNum.filter(el => el != null);
+        this.fireArrayPhoneSearch(this.phonesNum);
+      })
+      .catch(error => {
+        console.error(error);
       });
   }
 
@@ -93,22 +90,14 @@ export class FriendPage implements OnInit {
   onClickSuggestFriend() {
     if (this.platform.is('mobile')) {
       this.displayLoader = true;
-      this.getAccessToAllContact().then(() => {
-        this.fireArrayPhoneSearch(this.phonesNum);
-      });
+      this.getAccessToAllContact();
     }
   }
 
   fireArrayPhoneSearch(phoneArray = []) {
     this.suggested_friend = [];
     this.friendsService.getContactByPhoneNumber(phoneArray).subscribe(users => {
-      users.subscribe(x => {
-        if (x) {
-          if (!this.myFriendsUid.includes(x.uid)) {
-            this.suggested_friend.push(x);
-          }
-        }
-      });
+      this.suggested_friend = users.filter(u => !!u);
     });
     this.displayLoader = false;
   }
