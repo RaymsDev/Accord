@@ -20,7 +20,6 @@ export class FriendPage implements OnInit {
   searchString: string;
 
   possible_friend_to_add: IUser[];
-  possible_friend_selectable: ISelectable<IUser>[];
   display_possible_friend_list = false;
 
   displayLoader = false;
@@ -123,15 +122,14 @@ export class FriendPage implements OnInit {
       if (this.selectedSearch === 'Nickname') {
         this.friendsService
           .searchFriendByNickName(this.searchString)
-          .subscribe(user => {
-            if (user.length && !this.myFriends.some(u => user[0].id === u.id)) {
-              this.possible_friend_to_add = user;
-              this.possible_friend_selectable = [
-                new Selectable({
-                  Item: user[0],
-                  IsSelected: false
-                })
-              ];
+          .subscribe(users => {
+            if (
+              users.length &&
+              !this.myFriends.some(u => users[0].id === u.id)
+            ) {
+              this.possible_friend_to_add = users
+                .filter(u => !!u)
+                .filter(u => !this.myFriends.some(f => f.uid === u.uid));
               this.display_possible_friend_list = true;
             } else {
               this.display_possible_friend_list = false;
@@ -143,17 +141,8 @@ export class FriendPage implements OnInit {
         this.friendsService
           .getContactToOnePhoneNumber(phoneToSearch)
           .subscribe(user => {
-            if (
-              [user].length &&
-              !this.myFriends.some(u => user[0].id === u.id)
-            ) {
+            if (user && !this.myFriends.some(u => user.id === u.id)) {
               this.possible_friend_to_add = [user];
-              this.possible_friend_selectable = [
-                new Selectable({
-                  Item: user,
-                  IsSelected: false
-                })
-              ];
               this.display_possible_friend_list = true;
             } else {
               this.display_possible_friend_list = false;
@@ -182,6 +171,11 @@ export class FriendPage implements OnInit {
     for (let index = 0; index < this.suggested_friend.length; index++) {
       if (this.suggested_friend[index].uid === uid) {
         this.suggested_friend.splice(index, 1);
+      }
+    }
+    for (let index = 0; index < this.possible_friend_to_add.length; index++) {
+      if (this.possible_friend_to_add[index].uid === uid) {
+        this.possible_friend_to_add.splice(index, 1);
       }
     }
   }
