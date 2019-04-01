@@ -15,6 +15,8 @@ import { SignupComponent } from '../signup/signup.component';
 export class LoginPage implements OnInit {
   windowRef: any;
 
+  // TODO when verify disable field and hide capchat
+  // TODO invisible capchat
   phoneNumber = new PhoneNumber();
 
   verificationCode: string;
@@ -58,7 +60,7 @@ export class LoginPage implements OnInit {
   }
 
   verifyLoginCode() {
-    this.authService.verify_phone_code(this.windowRef, this.verificationCode);
+    this.authService.verify_phone_code(this.windowRef, this.verificationCode, this.phoneNumber.e164);
   }
 
   logout() {

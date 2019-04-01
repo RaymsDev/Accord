@@ -25,7 +25,7 @@ export class RoomPage implements OnInit {
     private roomService: RoomService,
     private userService: UserService,
     private actionSheetController: ActionSheetController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initRoom();
