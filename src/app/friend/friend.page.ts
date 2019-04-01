@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FriendsService } from '../services/friends.service';
 import { IUser } from '../models/IUser';
-import { Platform } from '@ionic/angular';
+import { Platform, ToastController } from '@ionic/angular';
 import { Contacts, Contact } from '@ionic-native/contacts/ngx';
 import { ISelectable } from '../models/ISelectable';
 import { Selectable } from '../models/Selectable';
@@ -40,17 +40,19 @@ export class FriendPage implements OnInit {
   constructor(
     private friendsService: FriendsService,
     private platform: Platform,
-    private contactsPhone: Contacts
+    private contactsPhone: Contacts,
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
+    this.IsMobile = this.platform.is('mobile');
+  }
+
+  ionViewDidEnter() {
     this.friendsService.getMyFriend().subscribe(friends => {
       this.myFriends = friends;
-
       this.myFriendsUid = friends.map(f => f.uid);
     });
-
-    this.IsMobile = this.platform.is('mobile');
   }
 
   getAccessToAllContact() {
@@ -97,18 +99,24 @@ export class FriendPage implements OnInit {
   fireArrayPhoneSearch(phoneArray = []) {
     this.suggested_friend = [];
     this.friendsService.getContactByPhoneNumber(phoneArray).subscribe(users => {
-      this.suggested_friend = users.filter(u => !!u);
+      this.suggested_friend = users
+        .filter(u => !!u)
+        .filter(u => !this.myFriends.some(f => f.uid === u.uid)); // Don't show already friends
+      if (this.suggested_friend.length === 0) {
+        this.showNoFriendToast();
+      }
     });
     this.displayLoader = false;
   }
 
-  searchUserIsEarlyAFreind(user: IUser): boolean {
-    for (let index = 0; index < this.myFriends.length; index++) {
-      if (this.myFriends[index].uid === user.uid) {
-        return false;
-      }
-    }
-    return true;
+  private async showNoFriendToast() {
+    const toast = await this.toastController.create({
+      duration: 3000,
+      message: 'No friend found!',
+      color: 'danger'
+    });
+
+    toast.present();
   }
 
   searchSomeoneClick() {
@@ -118,7 +126,7 @@ export class FriendPage implements OnInit {
         this.friendsService
           .searchFriendByNickName(this.searchString)
           .subscribe(user => {
-            if (user.length && this.searchUserIsEarlyAFreind(user[0])) {
+            if (user.length && !this.myFriends.some(u => user[0].id === u.id)) {
               this.possible_friend_to_add = user;
               this.possible_friend_selectable = [
                 new Selectable({
@@ -137,7 +145,10 @@ export class FriendPage implements OnInit {
         this.friendsService
           .getContactToOnePhoneNumber(phoneToSearch)
           .subscribe(user => {
-            if ([user].length && this.searchUserIsEarlyAFreind(user)) {
+            if (
+              [user].length &&
+              !this.myFriends.some(u => user[0].id === u.id)
+            ) {
               this.possible_friend_to_add = [user];
               this.possible_friend_selectable = [
                 new Selectable({
@@ -162,15 +173,17 @@ export class FriendPage implements OnInit {
     }
   }
 
-  addSuggestedFriend(uid) {
+  addSuggestedFriend(friend: IUser) {
+    const { uid } = friend;
     this.friendsService.addToMyFriendByUid(uid);
+    this.myFriends.push(friend);
     this.removeOfSuggestedFriend(uid);
   }
 
   removeOfSuggestedFriend(uid) {
     for (let index = 0; index < this.suggested_friend.length; index++) {
       if (this.suggested_friend[index].uid === uid) {
-        this.suggested_friend.slice(index, 1);
+        this.suggested_friend.splice(index, 1);
       }
     }
   }

@@ -95,7 +95,7 @@
       ></ion-progress-bar>
       <p *ngFor="let pfriend of suggested_friend">
         Possible friend: {{ pfriend.nickname }}
-        <ion-button (click)="addSuggestedFriend(pfriend.uid)">Add</ion-button>
+        <ion-button (click)="addSuggestedFriend(pfriend)">Add</ion-button>
       </p>
     </ion-card-content>
   </ion-card>
