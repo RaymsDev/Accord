@@ -17,18 +17,28 @@
     </ion-card-header>
     <ion-card-content>
       <div *ngIf="myFriends.length > 0; else noFriends">
-        <ion-item color="primary" *ngFor="let friend of myFriends">
-          <ion-avatar slot="start">
-            <img
-              *ngIf="!friend.pictureUrl; else hasPicture"
-              [src]="'https://api.adorable.io/avatars/285/' + friend.email"
-            />
-            <ng-template #hasPicture>
-              <img [src]="friend.pictureUrl" />
-            </ng-template>
-          </ion-avatar>
-          <ion-label>{{ friend.nickname }}</ion-label>
-        </ion-item>
+        <ng-container *ngFor="let friend of myFriends">
+          <ion-item-sliding>
+            <ion-item color="primary">
+              <ion-avatar slot="start">
+                <img
+                  *ngIf="!friend.pictureUrl; else hasPicture"
+                  [src]="'https://api.adorable.io/avatars/285/' + friend.email"
+                />
+                <ng-template #hasPicture>
+                  <img [src]="friend.pictureUrl" />
+                </ng-template>
+              </ion-avatar>
+              <ion-label>{{ friend.nickname }}</ion-label>
+            </ion-item>
+            <ion-item-options>
+              <ion-item-option color="danger" (click)="removeFriend(friend)">
+                <ion-icon slot="start" name="trash"></ion-icon>
+                Remove
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        </ng-container>
       </div>
       <ng-template #noFriends>
         <div>

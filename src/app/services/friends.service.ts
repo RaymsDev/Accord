@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { Observable, zip, of, from, concat, combineLatest } from 'rxjs';
 import { UserService } from './user.service';
 import { IUser } from '../models/IUser';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
@@ -44,7 +44,7 @@ export class FriendsService {
   }
 
   public addToMyFriendByUid(friendUid) {
-    this.userService.addFriend(friendUid).subscribe(async () => {
+    this.addFriend(friendUid).subscribe(async () => {
       const toast = await this.taoastController.create({
         duration: 3000,
         message: 'Friend added!',
@@ -52,5 +52,26 @@ export class FriendsService {
       });
       toast.present();
     });
+  }
+
+  public addFriend(uid: string) {
+    return this.userService.GetCurrentUser$().pipe(
+      tap(user => {
+        return this.userService.UpdateUser({
+          ...user,
+          friendIdList: [...user.friendIdList, uid]
+        });
+      })
+    );
+  }
+  public removeFriend(uid: string) {
+    return this.userService.GetCurrentUser$().pipe(
+      tap(user => {
+        return this.userService.UpdateUser({
+          ...user,
+          friendIdList: [...user.friendIdList.filter(fuid => fuid !== uid)]
+        });
+      })
+    );
   }
 }

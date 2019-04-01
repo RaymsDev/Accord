@@ -14,7 +14,6 @@ import { Selectable } from '../models/Selectable';
 export class FriendPage implements OnInit {
   // Variables
   myFriends: IUser[] = [];
-  myFriendsUid = [];
 
   selectedSearch = 'Nickname';
   searchBy = ['Nickname', 'Phone Number'];
@@ -51,7 +50,6 @@ export class FriendPage implements OnInit {
   ionViewDidEnter() {
     this.friendsService.getMyFriend().subscribe(friends => {
       this.myFriends = friends;
-      this.myFriendsUid = friends.map(f => f.uid);
     });
   }
 
@@ -186,5 +184,22 @@ export class FriendPage implements OnInit {
         this.suggested_friend.splice(index, 1);
       }
     }
+  }
+
+  removeFriend(friend: IUser) {
+    const { uid } = friend;
+    this.friendsService.removeFriend(uid).subscribe(async () => {
+      const toast = await this.toastController.create({
+        duration: 3000,
+        message: 'Friend remove!',
+        color: 'secondary'
+      });
+      for (let index = 0; index < this.myFriends.length; index++) {
+        if (this.myFriends[index].uid === uid) {
+          this.myFriends.splice(index, 1);
+        }
+      }
+      toast.present();
+    });
   }
 }
