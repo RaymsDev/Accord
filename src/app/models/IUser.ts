@@ -9,5 +9,5 @@ export interface IUser {
   pictureUrl: string;
   createdAt: string;
   phone?: string;
-  friends?: DocumentReference[];
+  friendIdList?: string[];
 }

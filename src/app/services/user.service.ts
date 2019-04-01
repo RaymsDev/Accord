@@ -40,7 +40,7 @@ export class UserService {
       phone: phone,
       createdAt: Date.now().toString(),
       uid: this.authService.CurrentUserId,
-      friends: new Array<DocumentReference>()
+      friendIdList: []
     };
     return user;
   }
@@ -48,7 +48,15 @@ export class UserService {
   public get GetCurrentFriends$(): Observable<IUser[]> {
     return this.GetCurrentUser$().pipe(
       switchMap(user => {
-        return this.GetUsers$(user.friends.map(f => f.id));
+        return this.GetUsers$(user.friendIdList);
+      })
+    );
+  }
+
+  public get GetCurrentFriendsWatch$(): Observable<IUser[]> {
+    return this.GetCurrentUser$().pipe(
+      switchMap(user => {
+        return this.GetUsersWatch$(user.friendIdList);
       })
     );
   }
@@ -65,6 +73,13 @@ export class UserService {
           return { id, ...data };
         })
       );
+  }
+
+  public UserWatch$(uid) {
+    return this.afStore
+      .collection<IUser>(environment.endpoints.users)
+      .doc<IUser>(uid)
+      .valueChanges();
   }
 
   public UserCollectionExist$(): Observable<boolean> {
@@ -109,26 +124,22 @@ export class UserService {
     const combined = combineLatest(userDocs);
     return combined;
   }
+  public GetUsersWatch$(userIdList: string[]): Observable<IUser[]> {
+    const userDocs = userIdList.map(id => this.UserWatch$(id));
+    const combined = combineLatest(userDocs);
+    return combined;
+  }
 
   // TODO : Fix it
   public addFriend(uid: string) {
-    this.GetCurrentUser$()
-      .pipe(
-        tap((user: IUser) => {
-          this.afStore
-            .collection(environment.endpoints.users)
-            .doc(uid)
-            .get()
-            .pipe(
-              tap(friend => {
-                user.friends.push(friend.ref);
-                this.UpdateUser(user);
-              })
-            )
-            .subscribe();
-        })
-      )
-      .subscribe();
+    return this.GetCurrentUser$().pipe(
+      tap(user => {
+        return this.UpdateUser({
+          ...user,
+          friendIdList: [...user.friendIdList, uid]
+        });
+      })
+    );
   }
 
   // TODO Where nickname is not him self

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Platform, ToastController } from '@ionic/angular';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { Observable, zip, of, from, concat, combineLatest } from 'rxjs';
@@ -14,7 +14,8 @@ import { environment } from 'src/environments/environment.prod';
 export class FriendsService {
   constructor(
     private afStore: AngularFirestore,
-    private userService: UserService
+    private userService: UserService,
+    private taoastController: ToastController
   ) {}
 
   public getMyFriend(): Observable<IUser[]> {
@@ -43,6 +44,13 @@ export class FriendsService {
   }
 
   public addToMyFriendByUid(friendUid) {
-    this.userService.addFriend(friendUid);
+    this.userService.addFriend(friendUid).subscribe(async () => {
+      const toast = await this.taoastController.create({
+        duration: 3000,
+        message: 'Friend added!',
+        color: 'secondary'
+      });
+      toast.present();
+    });
   }
 }
