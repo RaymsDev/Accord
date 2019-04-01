@@ -105,6 +105,13 @@ Le projet nécessite node.js (lts) et npm (6.9.0)
 > npm run docker-apk
 ```
 
+## Utilisateur de test
+
+Vous pouvez créer un compte ou utiliser l'utilisateur de test suivant:
+
+Phone : +33123456789
+Code de verification : 123456
+
 ## DevOps
 
 ![devops](assets\azure.jpg)
