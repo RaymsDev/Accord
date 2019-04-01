@@ -43,10 +43,10 @@ steps:
 - script: docker run --name $(containerName) $(imageName)
   displayName: 'docker run'
 
-- script: docker cp $(containerName):/usr/app/accord.apk accord.apk
+- script: docker cp $(containerName):/usr/app/accord.apk $(Build.SourcesDirectory)/accord.apk
   displayName: 'docker copy apk'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: $(Build.SourcesDirectory)/**/*.apk
+    pathtoPublish: $(Build.SourcesDirectory)/*.apk
     artifactName: apk

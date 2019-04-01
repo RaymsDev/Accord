@@ -26,7 +26,7 @@ export class EditPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    const phone = this.route.snapshot.paramMap.get('phoneNumber');
+    const phone = this.route.snapshot.paramMap.get('id');
     this.userService
       .GetCurrentUser$()
       .pipe(

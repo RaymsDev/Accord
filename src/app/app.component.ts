@@ -39,8 +39,10 @@ export class AppComponent implements DoCheck {
   initializeApp() {
     this.platform.ready().then(() => {
       this.watchUser();
+
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
       this.watchRooms();
     });
   }

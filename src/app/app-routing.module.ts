@@ -14,11 +14,6 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'list',
-    loadChildren: './list/list.module#ListPageModule',
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'room',
     loadChildren: './room/room.module#RoomPageModule',
     canActivate: [AuthGuard]
