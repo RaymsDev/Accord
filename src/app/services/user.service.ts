@@ -130,18 +130,6 @@ export class UserService {
     return combined;
   }
 
-  // TODO : Fix it
-  public addFriend(uid: string) {
-    return this.GetCurrentUser$().pipe(
-      tap(user => {
-        return this.UpdateUser({
-          ...user,
-          friendIdList: [...user.friendIdList, uid]
-        });
-      })
-    );
-  }
-
   // TODO Where nickname is not him self
   public getOtherUserByNickName(nickname: string): Observable<IUser[]> {
     return this.afStore
