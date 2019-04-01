@@ -11,17 +11,18 @@
 </ion-header>
 
 <ion-content padding color="dark">
-
   <ion-card>
     <ion-card-header>
       <ion-card-title color="light">Your friends</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <div *ngIf="myFriends.length">
-        <ion-item color='primary' *ngFor="let friend of myFriends">
+      <div *ngIf="myFriends.length > 0; else noFriends">
+        <ion-item color="primary" *ngFor="let friend of myFriends">
           <ion-avatar slot="start">
-            <img *ngIf="!friend.pictureUrl; else hasPicture"
-              [src]="'https://api.adorable.io/avatars/285/' + friend.email" />
+            <img
+              *ngIf="!friend.pictureUrl; else hasPicture"
+              [src]="'https://api.adorable.io/avatars/285/' + friend.email"
+            />
             <ng-template #hasPicture>
               <img [src]="friend.pictureUrl" />
             </ng-template>
@@ -29,9 +30,11 @@
           <ion-label>{{ friend.nickname }}</ion-label>
         </ion-item>
       </div>
-      <div *ngIf="!myFriends.length">
-        You don't have friend yet ;)
-      </div>
+      <ng-template #noFriends>
+        <div>
+          You don't have friend yet ;)
+        </div>
+      </ng-template>
     </ion-card-content>
   </ion-card>
 
@@ -45,30 +48,49 @@
           Search by:
         </ion-label>
         <ion-select [(ngModel)]="selectedSearch">
-          <ion-select-option *ngFor=" let search of searchBy">{{search}}</ion-select-option>
+          <ion-select-option *ngFor="let search of searchBy">{{
+            search
+          }}</ion-select-option>
         </ion-select>
-        <ion-input type="text" placeholder="{{selectedSearch}}" [(ngModel)]="searchString"></ion-input>
+        <ion-input
+          type="text"
+          placeholder="{{ selectedSearch }}"
+          [(ngModel)]="searchString"
+        ></ion-input>
       </ion-item>
       <ion-button class="search-friend-button" (click)="searchSomeoneClick()">
         <ion-icon name="search"></ion-icon> Search
       </ion-button>
 
-      <p *ngIf="noFriendFound">We don't found the guy you search, or he is early in your friend</p>
-      <ion-list class="friends-list background-primary" *ngIf="display_possible_friend_list">
+      <p *ngIf="noFriendFound">
+        We don't found the guy you search, or he is early in your friend
+      </p>
+      <ion-list
+        class="friends-list background-primary"
+        *ngIf="display_possible_friend_list"
+      >
         <ng-container *ngFor="let friend of possible_friend_selectable">
-          <app-user-item [SelectableUser]="friend" [canSelect]="true"></app-user-item>
+          <app-user-item
+            [SelectableUser]="friend"
+            [canSelect]="true"
+          ></app-user-item>
         </ng-container>
       </ion-list>
-      <ion-button color="tertiary" *ngIf="display_possible_friend_list" (click)="addToMyFriend()">Add</ion-button>
+      <ion-button
+        color="tertiary"
+        *ngIf="display_possible_friend_list"
+        (click)="addToMyFriend()"
+        >Add</ion-button
+      >
     </ion-card-content>
   </ion-card>
 
-  <ion-item *ngIf="platform.is('mobile')">
+  <ion-item *ngIf="IsMobile">
     <ion-button (click)="onClickSuggestFriend()">Suggest me friend</ion-button>
     <ion-progress-bar type="indeterminate"></ion-progress-bar>
-    <p *ngFor="let pfriend of suggested_friend">Possible friend: {{ pfriend.nickname}} <ion-button
-        (click)="addSuggestedFriend(uid)">Add</ion-button>
+    <p *ngFor="let pfriend of suggested_friend">
+      Possible friend: {{ pfriend.nickname }}
+      <ion-button (click)="addSuggestedFriend(pfriend.ui)">Add</ion-button>
     </p>
   </ion-item>
-
 </ion-content>

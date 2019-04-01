@@ -32,14 +32,12 @@
     <ion-icon slot="start" name="create"></ion-icon>
     {{ IsNewUser ? 'Create' : 'Edit' }}
   </ion-button>
+  <ion-button expand="full" color="secondary" [routerLink]="['/friend']">
+    <ion-icon slot="start" name="contact"></ion-icon>
+    Manage Friends
+  </ion-button>
   <ion-button expand="full" color="danger" (click)="OnClickLogout()">
     <ion-icon slot="start" name="close"></ion-icon>
     Logout
   </ion-button>
-
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="secondary" (click)="OnClickUpdateInfo()">
-      <ion-icon name="create"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 </ion-content>
