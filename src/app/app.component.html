@@ -2,20 +2,38 @@
   <ion-split-pane>
     <ion-menu>
       <ion-header>
-        <ion-toolbar>
+        <ion-toolbar color="primary">
           <ion-title>Menu</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-content>
-        <ion-list>
+      <ion-content color="tertiary">
+        <ion-list class="side-menu">
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
-            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
-              <ion-icon slot="start" [name]="p.icon"></ion-icon>
+            <ion-item [routerLink]="[p.url]" color="tertiary">
+              <ion-icon slot="start" [name]="p.icon || 'chatboxes'"></ion-icon>
               <ion-label>
-                {{p.title}}
+                {{ p.title }}
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item [routerLink]="'/room'" color="secondary">
+              <ion-icon slot="start" name="add"></ion-icon>
+              <ion-label>
+                Create Room
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ng-container *ngIf="User">
+            <ion-menu-toggle auto-hide="false">
+              <ion-item [routerLink]="'/user/edit'" color="primary">
+                <ion-icon slot="start" name="build"></ion-icon>
+                <ion-label>
+                  User Settings
+                </ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ng-container>
         </ion-list>
       </ion-content>
     </ion-menu>

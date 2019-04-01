@@ -1,0 +1,48 @@
+@import './../../../theme/variables.scss';
+
+.message-card {
+  padding: none;
+  margin: none;
+}
+.message-container {
+  padding: none;
+  margin: none;
+  display: flex;
+
+  .avatar {
+    height: 50px;
+    width: auto;
+    border-radius: 50%;
+  }
+  .message {
+    min-width: 80%;
+    padding: 0 0 0 $space;
+    .message-details {
+      display: flex;
+      width: 100%;
+      .name {
+        font-weight: bold;
+      }
+      .send-at {
+        padding: 0 4px 0 4px;
+        display: flex;
+        color: $medium;
+        font-size: 0.8em;
+        align-items: flex-end;
+      }
+      .message-content {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.message-container.current-user {
+  flex-direction: row-reverse;
+  .message {
+    padding: 0 $space 0 0;
+    .message-details {
+      flex-direction: row-reverse;
+    }
+  }
+}
