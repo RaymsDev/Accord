@@ -1,15 +1,21 @@
 @import './../../../theme/variables.scss';
 
+.message-card {
+  padding: none;
+  margin: none;
+}
 .message-container {
+  padding: none;
+  margin: none;
   display: flex;
-  width: 100%;
+
   .avatar {
     height: 50px;
     width: auto;
     border-radius: 50%;
   }
   .message {
-    max-width: 60%;
+    min-width: 80%;
     padding: 0 0 0 $space;
     .message-details {
       display: flex;

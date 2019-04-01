@@ -15,7 +15,25 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content #content padding color="dark">
+  <ion-content #content color="dark">
+    <ion-card
+      *ngIf="!Room.messages || Room.messages.length === 0"
+      class="welcome-card"
+      color="primary"
+    >
+      <ion-img src="/assets/icon/banner.png"></ion-img>
+      <ion-card-header>
+        <ion-card-subtitle>Get Started</ion-card-subtitle>
+        <ion-card-title>Welcome to Chanel</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-label
+          >Try to send message! You can use Markdown to send link, videos and
+          Pictures! Have fun.</ion-label
+        >
+      </ion-card-content>
+    </ion-card>
+
     <div class="chat">
       <app-message
         *ngFor="

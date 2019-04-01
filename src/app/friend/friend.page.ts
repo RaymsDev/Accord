@@ -43,7 +43,7 @@ export class FriendPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.IsMobile = this.platform.is('mobile');
+    this.IsMobile = this.platform.is('mobile') && this.platform.is('android');
   }
 
   ionViewDidEnter() {

@@ -57,9 +57,10 @@ export class FriendsService {
   public addFriend(uid: string) {
     return this.userService.GetCurrentUser$().pipe(
       tap(user => {
+        const friends = user.friendIdList ? user.friendIdList : [];
         return this.userService.UpdateUser({
           ...user,
-          friendIdList: [...user.friendIdList, uid]
+          friendIdList: [...friends, uid]
         });
       })
     );
@@ -67,9 +68,10 @@ export class FriendsService {
   public removeFriend(uid: string) {
     return this.userService.GetCurrentUser$().pipe(
       tap(user => {
+        const friends = user.friendIdList ? user.friendIdList : [];
         return this.userService.UpdateUser({
           ...user,
-          friendIdList: [...user.friendIdList.filter(fuid => fuid !== uid)]
+          friendIdList: [...friends.filter(fuid => fuid !== uid)]
         });
       })
     );

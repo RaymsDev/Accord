@@ -14,24 +14,41 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding color="dark">
-  <form [formGroup]="Form">
-    <ion-item color="primary">
-      <ion-label position="stacked">Name :</ion-label>
-      <ion-input type="text" formControlName="name" required></ion-input>
-    </ion-item>
-    <ion-item color="primary">
-      <ion-label position="stacked">Select Room Members:</ion-label>
-      <ion-list class="friends-list background-primary">
-        <ng-container *ngFor="let selectableUser of SelectableUserList">
-          <app-user-item [SelectableUser]="selectableUser" [canSelect]="true"></app-user-item>
-        </ng-container>
-      </ion-list>
-    </ion-item>
-  </form>
-
+<ion-content color="dark">
+  <ion-card color="primary">
+    <ion-card-content>
+      <form [formGroup]="Form">
+        <ion-item color="primary">
+          <ion-label position="stacked">Name :</ion-label>
+          <ion-input type="text" formControlName="name" required></ion-input>
+        </ion-item>
+        <ion-item color="primary">
+          <ion-label position="stacked">Select Room Members:</ion-label>
+          <ion-list lines="none" class="friends-list background-primary">
+            <ion-button
+              *ngIf="SelectableUserList?.length === 0"
+              [routerLink]="['/friend']"
+              color="secondary"
+              size="full"
+              >Add some friends!</ion-button
+            >
+            <ng-container *ngFor="let selectableUser of SelectableUserList">
+              <app-user-item
+                [SelectableUser]="selectableUser"
+                [canSelect]="true"
+              ></app-user-item>
+            </ng-container>
+          </ion-list>
+        </ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="secondary" (click)="OnSubmit()" [disabled]="!Form.valid">
+    <ion-fab-button
+      color="secondary"
+      (click)="OnSubmit()"
+      [disabled]="!Form.valid"
+    >
       <ion-icon *ngIf="IsEditMode; else isNewRoomMode" name="create"></ion-icon>
       <ng-template #isNewRoomMode>
         <ion-icon name="add"></ion-icon>
