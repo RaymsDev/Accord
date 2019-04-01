@@ -29,6 +29,11 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'user/edit/:id',
+    loadChildren: './user/edit/edit.module#EditPageModule',
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'friend',
     loadChildren: './friend/friend.module#FriendPageModule',
     canActivate: [AuthGuard]

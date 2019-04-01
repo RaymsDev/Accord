@@ -85,17 +85,22 @@ export class LoginPage implements OnInit, AfterViewInit {
   }
 
   async VerifyPhone() {
-    if (this.IsAndroid) {
-      const verificationId = await this.authService.VerifyPhoneAndroid(
-        this.PhoneForm.get('phone').value
-      );
-      this.promptCodeAndroid(verificationId);
-    } else {
-      const confirmationResult = await this.authService.VerifyPhone(
-        this.PhoneForm.get('phone').value,
-        this.Captcha
-      );
-      this.promptCodeWeb(confirmationResult);
+    try {
+      if (this.IsAndroid) {
+        const verificationId = await this.authService.VerifyPhoneAndroid(
+          this.PhoneForm.get('phone').value
+        );
+        this.promptCodeAndroid(verificationId);
+      } else {
+        const confirmationResult = await this.authService.VerifyPhone(
+          this.PhoneForm.get('phone').value,
+          this.Captcha
+        );
+        this.promptCodeWeb(confirmationResult);
+      }
+    } catch (error) {
+      console.error(error);
+      this.showToastError();
     }
   }
 
@@ -178,11 +183,10 @@ export class LoginPage implements OnInit, AfterViewInit {
   }
 
   private checkAndRedirect(userData: firebase.firestore.DocumentSnapshot) {
-    if (userData.exists) {
+    if (userData && userData.exists) {
       this.navigateToHome();
     } else {
-      const { phone } = userData.data();
-      this.router.navigate(['/user/edit', phone]);
+      this.router.navigate(['/user/edit', this.PhoneForm.get('phone').value]);
     }
   }
 }
