@@ -12,6 +12,7 @@ pool:
 variables:
   imageName: 'accord:$(build.buildId)'
   containerName : 'ionic-apk-builder$(build.buildId)'
+  apkFile : 'accord.apk'
 
 steps:
 # Download Secure File
@@ -43,10 +44,16 @@ steps:
 - script: docker run --name $(containerName) $(imageName)
   displayName: 'docker run'
 
-- script: docker cp $(containerName):/usr/app/accord.apk $(Build.SourcesDirectory)/accord.apk
+- script: docker cp $(containerName):/usr/app/accord.apk $(Build.SourcesDirectory)/$(apkFile)
   displayName: 'docker copy apk'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/$(apkFile)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: $(Build.SourcesDirectory)/*.apk
+    pathtoPublish: $(Build.ArtifactStagingDirectory)/$(apkFile)
     artifactName: apk
