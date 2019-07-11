@@ -40,8 +40,10 @@ export class AppComponent implements DoCheck {
     this.platform.ready().then(() => {
       this.watchUser();
 
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      if (this.platform.is('cordova')) {
+        this.statusBar.styleDefault();
+        this.splashScreen.hide();
+      }
 
       this.watchRooms();
     });
